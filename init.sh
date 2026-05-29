@@ -8,9 +8,9 @@
 #   ./init.sh investment sunmoonlion
 #
 # 效果:
-#   - 在四个子模块和两个 Celery Worker 模板内将 tpl / Tpl / TPL 替换为 <app-name>
+#   - 在四个子模块、一个 Node Bull Worker 和一个 Celery Worker 模板内将 tpl / Tpl / TPL 替换为 <app-name>
 #   - 在父仓根目录（maxdepth 含 .cursor/rules/、docs-* 等，排除模板实例目录）再替换一轮
-#   - 重命名四个子模块目录和两个 Celery Worker 目录，并修正各子模块 .git 指针
+#   - 重命名四个子模块目录、一个 Node Bull Worker 和一个 Celery Worker 目录，并修正各子模块 .git 指针
 #   - 同步父仓 .git/modules/*、各子模块 module config、父仓 .git/config 与索引中的子模块路径（避免仅改目录名后子模块断裂）
 #   - 更新 .gitmodules 中的远程 URL
 #   - 完成后需手动将父目录 tpl-app 重命名为 <app-name>-app
@@ -59,7 +59,7 @@ for dir in \
   tpl-web-backend \
   tpl-web-frontend \
   tpl-admin-backend \
-  celeryworker-tpl-web-backend \
+  nodebullworker-tpl-web-backend \
   celeryworker-tpl-admin-backend; do
   find "$SCRIPT_DIR/$dir" -type f \
     ! -path "*/.git" \
@@ -86,6 +86,7 @@ find "$SCRIPT_DIR" -maxdepth 4 -type f \
   ! -path "*/.git" \
   ! -path "*/.git/*" \
   ! -path "*/tpl-*/*" \
+  ! -path "*/nodebullworker-tpl-*/*" \
   ! -path "*/celeryworker-tpl-*/*" \
   ! -name "*.lock" \
   ! -name "pnpm-lock.yaml" \
@@ -125,9 +126,9 @@ mv "$SCRIPT_DIR/tpl-admin-frontend" "$SCRIPT_DIR/${APP_NAME}-admin-frontend"
 mv "$SCRIPT_DIR/tpl-web-backend"    "$SCRIPT_DIR/${APP_NAME}-web-backend"
 mv "$SCRIPT_DIR/tpl-web-frontend"   "$SCRIPT_DIR/${APP_NAME}-web-frontend"
 mv "$SCRIPT_DIR/tpl-admin-backend"  "$SCRIPT_DIR/${APP_NAME}-admin-backend"
-mv "$SCRIPT_DIR/celeryworker-tpl-web-backend"   "$SCRIPT_DIR/celeryworker-${APP_NAME}-web-backend"
+mv "$SCRIPT_DIR/nodebullworker-tpl-web-backend"   "$SCRIPT_DIR/nodebullworker-${APP_NAME}-web-backend"
 mv "$SCRIPT_DIR/celeryworker-tpl-admin-backend" "$SCRIPT_DIR/celeryworker-${APP_NAME}-admin-backend"
-rename_tpl_paths "$SCRIPT_DIR/celeryworker-${APP_NAME}-web-backend"
+rename_tpl_paths "$SCRIPT_DIR/nodebullworker-${APP_NAME}-web-backend"
 rename_tpl_paths "$SCRIPT_DIR/celeryworker-${APP_NAME}-admin-backend"
 
 # 3b. 同步 admin-backend 的 uv.lock 工作区包名（*.lock 不参与 [1/5] 文本替换）
@@ -194,8 +195,8 @@ if git -C "$SCRIPT_DIR" rev-parse --git-dir >/dev/null 2>&1; then
     "${APP_NAME}-admin-frontend" \
     "${APP_NAME}-web-backend" \
     "${APP_NAME}-web-frontend"
-  if [ -d "$SCRIPT_DIR/celeryworker-${APP_NAME}-web-backend" ]; then
-    git -C "$SCRIPT_DIR" add "celeryworker-${APP_NAME}-web-backend"
+  if [ -d "$SCRIPT_DIR/nodebullworker-${APP_NAME}-web-backend" ]; then
+    git -C "$SCRIPT_DIR" add "nodebullworker-${APP_NAME}-web-backend"
   fi
   if [ -d "$SCRIPT_DIR/celeryworker-${APP_NAME}-admin-backend" ]; then
     git -C "$SCRIPT_DIR" add "celeryworker-${APP_NAME}-admin-backend"
@@ -218,6 +219,6 @@ echo "       ${APP_NAME}-web-frontend"
 echo "       ${APP_NAME}-admin-backend"
 echo "    2. 在父仓库执行: git submodule sync"
 echo "    3. 分别进入各子模块提交改动"
-echo "    4. 检查两个 Celery Worker 的 RabbitMQ 配置:"
-echo "       celeryworker-${APP_NAME}-web-backend"
+echo "    4. 检查 Node Bull Worker 的 Redis 配置，以及 Celery Worker 的 RabbitMQ 配置:"
+echo "       nodebullworker-${APP_NAME}-web-backend"
 echo "       celeryworker-${APP_NAME}-admin-backend"
