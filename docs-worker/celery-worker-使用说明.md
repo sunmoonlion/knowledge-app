@@ -127,6 +127,8 @@ C1_celeryworker_<app_name>_admin_backend_enabled="true"
 KIND_celeryworker_<app_name>_admin_backend_enabled="true"
 ```
 
+部署前需先 **重建并推送 admin-backend 镜像**（镜像内含 `celery` 与 `app/worker.py`）。
+
 ## 扩缩容
 
 优先通过 Kubernetes Deployment replicas 扩容 Worker。Celery 进程内并发由 `CELERY_CONCURRENCY` 控制。

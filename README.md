@@ -47,7 +47,7 @@ nodebullworker-<app-name>-web-backend
 celeryworker-<app-name>-admin-backend
 ```
 
-Worker 默认复用对应 backend 镜像和业务 ConfigMap/Secret。`nodebullworker-*web-backend` 使用 Node Bull + Redis；`celeryworker-*admin-backend` 使用 Python Celery + RabbitMQ。
+Worker 默认复用对应 backend 镜像和业务 ConfigMap/Secret。`nodebullworker-*web-backend` 使用 Node Bull + Redis；`celeryworker-*admin-backend` 使用 Python Celery + RabbitMQ（backend 镜像内已含 `app/worker.py` 与示例任务）。
 
 详细使用说明：
 
