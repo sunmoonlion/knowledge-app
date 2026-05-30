@@ -58,7 +58,7 @@ DEFAULT_PROJECT_ID="${NODEBULLWORKER_TPL_WEB_BACKEND_PROJECT_ID:-}"
 DEFAULT_NAMESPACE="${NODEBULLWORKER_TPL_WEB_BACKEND_NAMESPACE:-}"
 DEFAULT_ENVIRONMENT="${ENVIRONMENT:-}"
 
-RESOURCES_DIR="../../../resources"
+RESOURCES_DIR="$APP_ROOT/resources"
 K8S_RESOURCE_DIR="${RESOURCES_DIR}/k8s-resource"
 NODEBULLWORKER_TPL_WEB_BACKEND_YAML="${K8S_RESOURCE_DIR}/custom-values/app/generate-app/nodebullworker-tpl-web-backend-generated.yaml"
 NODEBULLWORKER_TPL_WEB_BACKEND_PVC_YAML="${K8S_RESOURCE_DIR}/custom-values/pvc/nodebullworker-tpl-web-backend-pvc/generate-nodebullworker-tpl-web-backend-pvc/nodebullworker-tpl-web-backend-pvc-generated.yaml"
