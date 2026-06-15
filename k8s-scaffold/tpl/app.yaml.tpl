@@ -28,6 +28,9 @@ spec:
             name: ${__APP_NAME_UPPER___CONFIGMAP_NAME:-__APP_NAME__-config}
         - secretRef:
             name: ${__APP_NAME_UPPER___SECRET_NAME:-__APP_NAME__-secret}
+${__APP_NAME_UPPER___DATABASE_ENV_FROM}
+${__APP_NAME_UPPER___OBJECT_STORAGE_ENV_FROM}
+${__APP_NAME_UPPER___ELASTICSEARCH_ENV_FROM}
         resources:
           requests:
             memory: "__MEMORY_REQUEST__"
@@ -52,10 +55,12 @@ spec:
         volumeMounts:
         - name: data
           mountPath: ${PVC_MOUNT_PATH:-/app/data}
+${__APP_NAME_UPPER___ELASTICSEARCH_VOLUME_MOUNT}
       volumes:
       - name: data
         persistentVolumeClaim:
           claimName: ${PVC_NAME:-__APP_NAME__-pvc}
+${__APP_NAME_UPPER___ELASTICSEARCH_VOLUME}
 ---
 apiVersion: v1
 kind: Service

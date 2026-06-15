@@ -47,22 +47,88 @@ export IMAGE_PULL_POLICY="${IMAGE_PULL_POLICY:-}"
 export __APP_NAME_UPPER___IMAGE_PULL_SECRET_NAME="${__APP_NAME_UPPER___IMAGE_PULL_SECRET_NAME:-}"
 export __APP_NAME_UPPER___SECRET_NAME="${__APP_NAME_UPPER___SECRET_NAME:-}"
 export __APP_NAME_UPPER___CONFIGMAP_NAME="${__APP_NAME_UPPER___CONFIGMAP_NAME:-}"
+export __APP_NAME_UPPER___POSTGRESQL_SECRET_NAME="${__APP_NAME_UPPER___POSTGRESQL_SECRET_NAME:-}"
+export __APP_NAME_UPPER___REDIS_SECRET_NAME="${__APP_NAME_UPPER___REDIS_SECRET_NAME:-}"
+export __APP_NAME_UPPER___MONGODB_SECRET_NAME="${__APP_NAME_UPPER___MONGODB_SECRET_NAME:-}"
+export __APP_NAME_UPPER___DATABASE_ENV_FROM=""
+if [[ -n "$__APP_NAME_UPPER___POSTGRESQL_SECRET_NAME" ||
+      -n "$__APP_NAME_UPPER___REDIS_SECRET_NAME" ||
+      -n "$__APP_NAME_UPPER___MONGODB_SECRET_NAME" ]]; then
+    if [[ -z "$__APP_NAME_UPPER___POSTGRESQL_SECRET_NAME" ||
+          -z "$__APP_NAME_UPPER___REDIS_SECRET_NAME" ||
+          -z "$__APP_NAME_UPPER___MONGODB_SECRET_NAME" ]]; then
+        log_error "PostgreSQL、Redis 和 MongoDB Secret 名称必须同时设置"
+        exit 1
+    fi
+    printf -v __APP_NAME_UPPER___DATABASE_ENV_FROM \
+      '        - secretRef:\n            name: %s\n        - secretRef:\n            name: %s\n        - secretRef:\n            name: %s' \
+      "$__APP_NAME_UPPER___POSTGRESQL_SECRET_NAME" \
+      "$__APP_NAME_UPPER___REDIS_SECRET_NAME" \
+      "$__APP_NAME_UPPER___MONGODB_SECRET_NAME"
+    export __APP_NAME_UPPER___DATABASE_ENV_FROM
+fi
+export __APP_NAME_UPPER___OBJECT_STORAGE_CONFIGMAP_NAME="${__APP_NAME_UPPER___OBJECT_STORAGE_CONFIGMAP_NAME:-}"
+export __APP_NAME_UPPER___OBJECT_STORAGE_SECRET_NAME="${__APP_NAME_UPPER___OBJECT_STORAGE_SECRET_NAME:-}"
+export __APP_NAME_UPPER___OBJECT_STORAGE_ENV_FROM=""
+if [[ -n "$__APP_NAME_UPPER___OBJECT_STORAGE_CONFIGMAP_NAME" ||
+      -n "$__APP_NAME_UPPER___OBJECT_STORAGE_SECRET_NAME" ]]; then
+    if [[ -z "$__APP_NAME_UPPER___OBJECT_STORAGE_CONFIGMAP_NAME" ||
+          -z "$__APP_NAME_UPPER___OBJECT_STORAGE_SECRET_NAME" ]]; then
+        log_error "对象存储 ConfigMap 和 Secret 名称必须同时设置"
+        exit 1
+    fi
+    printf -v __APP_NAME_UPPER___OBJECT_STORAGE_ENV_FROM \
+      '        - configMapRef:\n            name: %s\n        - secretRef:\n            name: %s' \
+      "$__APP_NAME_UPPER___OBJECT_STORAGE_CONFIGMAP_NAME" \
+      "$__APP_NAME_UPPER___OBJECT_STORAGE_SECRET_NAME"
+    export __APP_NAME_UPPER___OBJECT_STORAGE_ENV_FROM
+fi
+export __APP_NAME_UPPER___ELASTICSEARCH_CONFIGMAP_NAME="${__APP_NAME_UPPER___ELASTICSEARCH_CONFIGMAP_NAME:-}"
+export __APP_NAME_UPPER___ELASTICSEARCH_SECRET_NAME="${__APP_NAME_UPPER___ELASTICSEARCH_SECRET_NAME:-}"
+export __APP_NAME_UPPER___ELASTICSEARCH_ENV_FROM=""
+export __APP_NAME_UPPER___ELASTICSEARCH_VOLUME_MOUNT=""
+export __APP_NAME_UPPER___ELASTICSEARCH_VOLUME=""
+if [[ -n "$__APP_NAME_UPPER___ELASTICSEARCH_CONFIGMAP_NAME" ||
+      -n "$__APP_NAME_UPPER___ELASTICSEARCH_SECRET_NAME" ]]; then
+    if [[ -z "$__APP_NAME_UPPER___ELASTICSEARCH_CONFIGMAP_NAME" ||
+          -z "$__APP_NAME_UPPER___ELASTICSEARCH_SECRET_NAME" ]]; then
+        log_error "Elasticsearch ConfigMap 和 Secret 名称必须同时设置"
+        exit 1
+    fi
+    printf -v __APP_NAME_UPPER___ELASTICSEARCH_ENV_FROM \
+      '        - configMapRef:\n            name: %s\n        - secretRef:\n            name: %s' \
+      "$__APP_NAME_UPPER___ELASTICSEARCH_CONFIGMAP_NAME" \
+      "$__APP_NAME_UPPER___ELASTICSEARCH_SECRET_NAME"
+    printf -v __APP_NAME_UPPER___ELASTICSEARCH_VOLUME_MOUNT \
+      '        - name: elasticsearch-ca\n          mountPath: /var/run/secrets/sunmoonai/elasticsearch\n          readOnly: true'
+    printf -v __APP_NAME_UPPER___ELASTICSEARCH_VOLUME \
+      '      - name: elasticsearch-ca\n        secret:\n          secretName: %s\n          items:\n          - key: ca.crt\n            path: ca.crt' \
+      "$__APP_NAME_UPPER___ELASTICSEARCH_SECRET_NAME"
+    export __APP_NAME_UPPER___ELASTICSEARCH_ENV_FROM
+    export __APP_NAME_UPPER___ELASTICSEARCH_VOLUME_MOUNT
+    export __APP_NAME_UPPER___ELASTICSEARCH_VOLUME
+fi
 export PVC_NAME="${PVC_NAME:-}"
 export PVC_MOUNT_PATH="${PVC_MOUNT_PATH:-}"
 export PVC_SUB_PATH="${PVC_SUB_PATH:-}"
 
 validate_yaml() {
     local yaml_file="$1"
-    if command -v kubectl &> /dev/null; then
-        if kubectl apply --dry-run=client -f "$yaml_file" &> /dev/null; then
+    if command -v ruby &> /dev/null; then
+        if ruby -e 'require "yaml"; YAML.load_stream(File.read(ARGV.fetch(0)))' "$yaml_file" &> /dev/null; then
             log_success "YAML 验证通过: $(basename "$yaml_file")"
         else
             log_error "YAML 验证失败: $(basename "$yaml_file")"
-            kubectl apply --dry-run=client -f "$yaml_file" 2>&1 | head -20
+            ruby -e 'require "yaml"; YAML.load_stream(File.read(ARGV.fetch(0)))' "$yaml_file" 2>&1 | head -20
             return 1
         fi
+    elif command -v kubectl &> /dev/null && kubectl config current-context &> /dev/null; then
+        kubectl apply --dry-run=client -f "$yaml_file" &> /dev/null || {
+            log_error "YAML/Kubernetes 资源验证失败: $(basename "$yaml_file")"
+            return 1
+        }
     else
-        log_warn "kubectl 未安装，跳过 YAML 验证"
+        log_warn "缺少 Ruby YAML 解析器且没有可用 Kubernetes context，跳过 YAML 验证"
     fi
 }
 

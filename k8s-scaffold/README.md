@@ -9,8 +9,17 @@
 ```bash
 cd tpl-app/k8s-scaffold/
 
-# 后端服务（NestJS / FastAPI）
+# 一次生成四组件和业务 App 总部署入口
+./scaffold-full-app.sh research --output-dir /home/zymun/k8s/sunmoonai/app-platform
+
+# 后端服务（NestJS / FastAPI，默认接入 DB、S3 和 Elasticsearch）
 ./scaffold.sh my-service 8000
+
+# 需要平台 S3 对象存储的后端
+./scaffold.sh document-service 8000 --with-object-storage
+
+# 需要平台 Elasticsearch 的后端
+./scaffold.sh search-service 8000 --with-elasticsearch
 
 # Next.js 前端（有 Node.js 服务层，运行时读取环境变量）
 ./scaffold.sh my-web 3000 --type node-frontend
@@ -39,6 +48,12 @@ cd tpl-app/k8s-scaffold/
 | `--no-configmap` | 不生成 ConfigMap | — |
 | `--no-ingress` | 不生成 Ingress | — |
 | `--no-pvc` | 不生成 PVC | — |
+| `--with-object-storage` | 增加独立的 `<app>-s3` ConfigMap/Secret `envFrom` | — |
+| `--with-elasticsearch` | 增加独立的 `<app>-elasticsearch` 配置、凭据和 CA 挂载 | — |
+| `--with-database` | 增加独立 PostgreSQL/Redis 连接 Secret | — |
+| `--without-object-storage` | 显式关闭 Backend 的 S3 接线 | — |
+| `--without-elasticsearch` | 显式关闭 Backend 的 Elasticsearch 接线 | — |
+| `--without-database` | 显式关闭 Backend 的数据库接线 | — |
 | `--memory-request` | 内存请求（覆盖类型默认值） | `512Mi` |
 | `--memory-limit` | 内存限制 | `1Gi` |
 | `--cpu-request` | CPU 请求 | `200m` |
@@ -51,6 +66,18 @@ cd tpl-app/k8s-scaffold/
 | `backend` | NestJS / FastAPI 等后端（**默认**） | 内存 256Mi/512Mi，CPU 100m/500m | 有 |
 | `node-frontend` | Next.js（有 Node.js 进程，运行时读取 env） | 内存 256Mi/512Mi，CPU 100m/500m | 有 |
 | `static-frontend` | Vite/React + nginx（构建时烧入，无运行时 env） | 内存 64Mi/128Mi，CPU 50m/200m | **无** |
+
+Backend 默认启用数据库、对象存储和 Elasticsearch 接线。`--with-*`
+可用于显式表达，`--without-*` 仅用于确实不需要
+对应能力的特殊服务。
+
+对象存储接线不创建 Bucket 或凭据，只让 Deployment 引用 Data
+Platform S3 Provisioner 创建的 `<app>-s3` ConfigMap 和 Secret。该选项只适用
+于 Backend 或 Node 服务；静态前端使用时会被拒绝。
+
+Elasticsearch 接线同样只负责 Deployment 接线，不创建索引或凭据。资源由
+Backend 的 `search-access-bootstrap` 声明并调用 Data Platform Provisioner
+创建。静态前端不得持有 Elasticsearch 凭据。
 
 ---
 

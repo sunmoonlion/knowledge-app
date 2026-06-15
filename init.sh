@@ -45,6 +45,12 @@ for dir in tpl-admin-frontend tpl-web-backend tpl-web-frontend tpl-admin-backend
   find "$SCRIPT_DIR/$dir" -type f \
     ! -path "*/.git" \
     ! -path "*/.git/*" \
+    ! -path "*/app/prisma/clients/*" \
+    ! -name "*.so" \
+    ! -name "*.so.*" \
+    ! -name "*.node" \
+    ! -name "*.dll" \
+    ! -name "*.dylib" \
     ! -name "*.lock" \
     ! -name "pnpm-lock.yaml" \
     ! -name "CHANGELOG.md" \
@@ -67,6 +73,7 @@ find "$SCRIPT_DIR" -maxdepth 4 -type f \
   ! -path "*/.git" \
   ! -path "*/.git/*" \
   ! -path "*/tpl-*/*" \
+  ! -path "*/k8s-scaffold/*" \
   ! -name "*.lock" \
   ! -name "pnpm-lock.yaml" \
   ! -name "CHANGELOG.md" \

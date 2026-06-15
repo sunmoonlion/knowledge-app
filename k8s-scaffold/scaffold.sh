@@ -18,6 +18,12 @@
 #   --no-configmap            不生成 ConfigMap（static-frontend 自动设置）
 #   --no-ingress              不生成 Ingress
 #   --no-pvc                  不生成 PVC
+#   --with-object-storage     为 Backend 增加独立 S3 ConfigMap/Secret envFrom
+#   --with-elasticsearch      为 Backend 增加平台 Elasticsearch 配置、凭据和 CA
+#   --with-database           为 Backend 增加 PostgreSQL/Redis 连接 Secret
+#   --without-object-storage  显式关闭 Backend 的 S3 接线
+#   --without-elasticsearch   显式关闭 Backend 的 Elasticsearch 接线
+#   --without-database        显式关闭 Backend 的数据库接线
 #   --memory-request MEM      内存请求（覆盖类型默认值）
 #   --memory-limit MEM        内存限制
 #   --cpu-request CPU         CPU 请求
@@ -64,6 +70,9 @@ OUTPUT_DIR="."
 WITH_CONFIGMAP="true"
 WITH_INGRESS="true"
 WITH_PVC="true"
+WITH_OBJECT_STORAGE="auto"
+WITH_ELASTICSEARCH="auto"
+WITH_DATABASE="auto"
 MEMORY_REQUEST=""
 MEMORY_LIMIT=""
 CPU_REQUEST=""
@@ -79,6 +88,12 @@ while [[ $# -gt 0 ]]; do
         --no-configmap)   WITH_CONFIGMAP="false"; shift ;;
         --no-ingress)     WITH_INGRESS="false";   shift ;;
         --no-pvc)         WITH_PVC="false";       shift ;;
+        --with-object-storage) WITH_OBJECT_STORAGE="true"; shift ;;
+        --with-elasticsearch) WITH_ELASTICSEARCH="true"; shift ;;
+        --with-database) WITH_DATABASE="true"; shift ;;
+        --without-object-storage) WITH_OBJECT_STORAGE="false"; shift ;;
+        --without-elasticsearch) WITH_ELASTICSEARCH="false"; shift ;;
+        --without-database) WITH_DATABASE="false"; shift ;;
         --memory-request) MEMORY_REQUEST="$2";    shift 2 ;;
         --memory-limit)   MEMORY_LIMIT="$2";      shift 2 ;;
         --cpu-request)    CPU_REQUEST="$2";       shift 2 ;;
@@ -93,6 +108,21 @@ done
 
 case "$APP_TYPE" in
     static-frontend)
+        [[ "$WITH_OBJECT_STORAGE" == "true" ]] && {
+            log_error "static-frontend 不允许接收对象存储长期凭据"
+            exit 1
+        }
+        [[ "$WITH_ELASTICSEARCH" == "true" ]] && {
+            log_error "static-frontend 不允许接收 Elasticsearch 长期凭据"
+            exit 1
+        }
+        [[ "$WITH_DATABASE" == "true" ]] && {
+            log_error "static-frontend 不允许接收数据库长期凭据"
+            exit 1
+        }
+        WITH_OBJECT_STORAGE="false"
+        WITH_ELASTICSEARCH="false"
+        WITH_DATABASE="false"
         WITH_CONFIGMAP="false"
         APP_YAML_TPL="app-static.yaml.tpl"
         : "${MEMORY_REQUEST:=64Mi}"
@@ -100,7 +130,20 @@ case "$APP_TYPE" in
         : "${CPU_REQUEST:=50m}"
         : "${CPU_LIMIT:=200m}"
         ;;
-    node-frontend|backend|*)
+    backend)
+        [[ "$WITH_OBJECT_STORAGE" == "auto" ]] && WITH_OBJECT_STORAGE="true"
+        [[ "$WITH_ELASTICSEARCH" == "auto" ]] && WITH_ELASTICSEARCH="true"
+        [[ "$WITH_DATABASE" == "auto" ]] && WITH_DATABASE="true"
+        APP_YAML_TPL="app.yaml.tpl"
+        : "${MEMORY_REQUEST:=256Mi}"
+        : "${MEMORY_LIMIT:=512Mi}"
+        : "${CPU_REQUEST:=100m}"
+        : "${CPU_LIMIT:=500m}"
+        ;;
+    node-frontend|*)
+        [[ "$WITH_OBJECT_STORAGE" == "auto" ]] && WITH_OBJECT_STORAGE="false"
+        [[ "$WITH_ELASTICSEARCH" == "auto" ]] && WITH_ELASTICSEARCH="false"
+        [[ "$WITH_DATABASE" == "auto" ]] && WITH_DATABASE="false"
         APP_YAML_TPL="app.yaml.tpl"
         : "${MEMORY_REQUEST:=256Mi}"
         : "${MEMORY_LIMIT:=512Mi}"
@@ -112,6 +155,37 @@ esac
 # kebab-case → UPPER_SNAKE_CASE（report-service → REPORT_SERVICE）
 APP_NAME_UPPER="$(echo "$APP_NAME" | tr '-' '_' | tr '[:lower:]' '[:upper:]')"
 
+OBJECT_STORAGE_CONFIGMAP_NAME=""
+OBJECT_STORAGE_SECRET_NAME=""
+if [[ "$WITH_OBJECT_STORAGE" == "true" ]]; then
+    if [[ "$APP_TYPE" == "static-frontend" ]]; then
+        log_error "static-frontend 不允许接收对象存储长期凭据"
+        exit 1
+    fi
+    OBJECT_STORAGE_CONFIGMAP_NAME="${APP_NAME}-s3"
+    OBJECT_STORAGE_SECRET_NAME="${APP_NAME}-s3"
+fi
+
+ELASTICSEARCH_CONFIGMAP_NAME=""
+ELASTICSEARCH_SECRET_NAME=""
+if [[ "$WITH_ELASTICSEARCH" == "true" ]]; then
+    if [[ "$APP_TYPE" == "static-frontend" ]]; then
+        log_error "static-frontend 不允许接收 Elasticsearch 长期凭据"
+        exit 1
+    fi
+    ELASTICSEARCH_CONFIGMAP_NAME="${APP_NAME}-elasticsearch"
+    ELASTICSEARCH_SECRET_NAME="${APP_NAME}-elasticsearch"
+fi
+
+POSTGRESQL_SECRET_NAME=""
+REDIS_SECRET_NAME=""
+MONGODB_SECRET_NAME=""
+if [[ "$WITH_DATABASE" == "true" ]]; then
+    POSTGRESQL_SECRET_NAME="${APP_NAME}-postgresql-conn"
+    REDIS_SECRET_NAME="${APP_NAME}-redis-conn"
+    MONGODB_SECRET_NAME="${APP_NAME}-mongodb-conn"
+fi
+
 K8S_RESOURCE_DIR="$OUTPUT_DIR/resources/k8s-resource"
 DEPLOY_DIR="$OUTPUT_DIR/deploy-$APP_NAME"
 
@@ -121,6 +195,9 @@ log_info "端口       : $PORT     类型: $APP_TYPE"
 log_info "Namespace  : $NAMESPACE"
 log_info "资源配额   : 内存 $MEMORY_REQUEST/$MEMORY_LIMIT  CPU $CPU_REQUEST/$CPU_LIMIT"
 log_info "ConfigMap  : $WITH_CONFIGMAP   Ingress: $WITH_INGRESS   PVC: $WITH_PVC"
+log_info "Object S3  : $WITH_OBJECT_STORAGE"
+log_info "Elasticsearch: $WITH_ELASTICSEARCH"
+log_info "Database   : $WITH_DATABASE"
 log_info "输出目录   : $OUTPUT_DIR"
 log_info "============================================================"
 
@@ -151,6 +228,13 @@ render_tpl() {
         -e "s|__MEMORY_LIMIT__|$MEMORY_LIMIT|g" \
         -e "s|__CPU_REQUEST__|$CPU_REQUEST|g" \
         -e "s|__CPU_LIMIT__|$CPU_LIMIT|g" \
+        -e "s|__OBJECT_STORAGE_CONFIGMAP_NAME__|$OBJECT_STORAGE_CONFIGMAP_NAME|g" \
+        -e "s|__OBJECT_STORAGE_SECRET_NAME__|$OBJECT_STORAGE_SECRET_NAME|g" \
+        -e "s|__ELASTICSEARCH_CONFIGMAP_NAME__|$ELASTICSEARCH_CONFIGMAP_NAME|g" \
+        -e "s|__ELASTICSEARCH_SECRET_NAME__|$ELASTICSEARCH_SECRET_NAME|g" \
+        -e "s|__POSTGRESQL_SECRET_NAME__|$POSTGRESQL_SECRET_NAME|g" \
+        -e "s|__REDIS_SECRET_NAME__|$REDIS_SECRET_NAME|g" \
+        -e "s|__MONGODB_SECRET_NAME__|$MONGODB_SECRET_NAME|g" \
         "$tpl_file" > "$out_file"
 }
 

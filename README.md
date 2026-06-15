@@ -3,6 +3,9 @@
 
 通用应用模板，包含四个子模块，用于快速初始化新项目。
 
+模板中的四个组件和两个 Backend 的 DB、S3、Elasticsearch 能力均保持完整。
+运行时是否创建 Pod，只在 K8s 部署配置中按集群决定。
+
 <!-- synced with init.sh + web-frontend Next standalone -->
 
 ## 仓库结构
@@ -14,6 +17,8 @@ tpl-app/
 ├── CLAUDE.md                # Claude Code 项目上下文模板
 ├── docs-claude/             # Claude Code 文档体系模板
 ├── docs-cursor/             # Cursor 文档体系模板
+├── nodebullworker-tpl-web-backend/   # 用户端 backend 的 Node Bull/Redis 异步 worker 部署
+├── celeryworker-tpl-admin-backend/ # 管理端 backend 的 Celery Worker 部署模板
 ├── tpl-admin-frontend/      # 管理后台前端（Vue 3 + Vite，CSR）
 ├── tpl-admin-backend/       # 管理后台后端（FastAPI + SQLAlchemy）
 ├── tpl-web-frontend/        # 用户端前端（Next.js 16，SSR）
@@ -37,6 +42,20 @@ tpl-app/
 管理端：tpl-admin-frontend  +  tpl-admin-backend
 用户端：tpl-web-frontend    +  tpl-web-backend
 ```
+
+`init.sh <app-name>` 还会把两个 worker 模板实例化为：
+
+```
+nodebullworker-<app-name>-web-backend
+celeryworker-<app-name>-admin-backend
+```
+
+Worker 默认复用对应 backend 镜像和业务 ConfigMap/Secret。`nodebullworker-*web-backend` 使用 Node Bull + Redis；`celeryworker-*admin-backend` 使用 Python Celery + RabbitMQ（backend 镜像内已含 `app/worker.py` 与示例任务）。
+
+详细使用说明：
+
+- [Node Bull Worker 使用说明](docs-worker/nodebull-worker-使用说明.md)
+- [Celery Worker 使用说明](docs-worker/celery-worker-使用说明.md)
 
 BFF 认证说明：
 - 当前建议采用「后端 BFF 统一对接 Casdoor」模式：
@@ -246,6 +265,39 @@ cd tpl-admin-backend/db-access-bootstrap   # 或 tpl-web-backend/db-access-boots
 
 - `tpl-admin-backend/db-access-bootstrap/config/postgresql.k8s.env`
 - `tpl-web-backend/db-access-bootstrap/config/redis.k8s.env`
+
+### 7) Backend 平台数据能力
+
+两个 Backend 默认完整具备数据库、对象存储和 Elasticsearch 接入能力：
+
+- `tpl-admin-backend/storage-access-bootstrap/`
+- `tpl-web-backend/storage-access-bootstrap/`
+
+两套脚手架默认启用。它们调用 Data Platform 的统一 Provisioner，根据声明创建
+Bucket、最小权限 IAM 身份，并向目标 Namespace 下发独立 ConfigMap 和
+Secret；Elasticsearch 脚手架创建独立索引、Alias、角色和访问凭据。
+
+模板不预先永久固化业务职责。具体功能开发时遵守：每类业务数据在任一时刻
+只有一个 Backend 写入，并由该 Backend 提供权威读取 API。另一个 Backend
+通过 API、事件或任务消息使用该数据。
+
+```bash
+cd tpl-web-backend
+
+./storage-access-bootstrap/storage-access-bootstrap.sh validate
+./storage-access-bootstrap/storage-access-bootstrap.sh provision
+./search-access-bootstrap/search-access-bootstrap.sh provision
+```
+
+生成 Backend 的 Kubernetes 部署目录时默认引用 `<backend>-s3` 和
+`<backend>-elasticsearch` ConfigMap/Secret：
+
+```bash
+./k8s-scaffold/scaffold.sh tpl-web-backend 8000 \
+  --type backend
+```
+
+Frontend 不得启用该选项或持有长期 S3 凭据。
 
 ## 使用方法
 
