@@ -281,12 +281,11 @@ deploy_app() {
 
     auto_generate_yaml "$__APP_NAME_UPPER___YAML" "$K8S_RESOURCE_DIR" || return 1
 
-    if [ -f "$__APP_NAME_UPPER___PVC_YAML" ]; then
-        log_info "部署 PVC..."
-        kubectl apply -f "$__APP_NAME_UPPER___PVC_YAML" -n "$NAMESPACE" \
-            && log_success "PVC 部署完成" \
-            || { log_error "PVC 部署失败"; return 1; }
-    fi
+    log_info "生成并部署 PVC..."
+    auto_generate_yaml "$__APP_NAME_UPPER___PVC_YAML" || return 1
+    kubectl apply -f "$__APP_NAME_UPPER___PVC_YAML" -n "$NAMESPACE" \
+        && log_success "PVC 部署完成" \
+        || { log_error "PVC 部署失败"; return 1; }
 
     kubectl apply -f "$__APP_NAME_UPPER___YAML" -n "$NAMESPACE"
 
