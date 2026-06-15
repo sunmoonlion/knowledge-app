@@ -58,7 +58,7 @@ DEFAULT_PROJECT_ID="${__APP_NAME_UPPER___PROJECT_ID:-}"
 DEFAULT_NAMESPACE="${__APP_NAME_UPPER___NAMESPACE:-}"
 DEFAULT_ENVIRONMENT="${ENVIRONMENT:-}"
 
-RESOURCES_DIR="../../../resources"
+RESOURCES_DIR="$APP_ROOT/resources"
 K8S_RESOURCE_DIR="${RESOURCES_DIR}/k8s-resource"
 __APP_NAME_UPPER___YAML="${K8S_RESOURCE_DIR}/custom-values/app/generate-app/__APP_NAME__-generated.yaml"
 __APP_NAME_UPPER___PVC_YAML="${K8S_RESOURCE_DIR}/custom-values/pvc/__APP_NAME__-pvc/generate-__APP_NAME__-pvc/__APP_NAME__-pvc-generated.yaml"
