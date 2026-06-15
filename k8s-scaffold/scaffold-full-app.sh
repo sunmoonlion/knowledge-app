@@ -33,7 +33,7 @@ mkdir -p "$APP_DIR"
 "$SCRIPT_DIR/scaffold.sh" "${APP_NAME}-admin-frontend" 80 \
     --type static-frontend --namespace "$NAMESPACE" \
     --output-dir "$APP_DIR/${APP_NAME}-admin-frontend"
-"$SCRIPT_DIR/scaffold.sh" "${APP_NAME}-web-backend" 8000 \
+"$SCRIPT_DIR/scaffold.sh" "${APP_NAME}-web-backend" 3000 \
     --type backend --namespace "$NAMESPACE" \
     --output-dir "$APP_DIR/${APP_NAME}-web-backend"
 "$SCRIPT_DIR/scaffold.sh" "${APP_NAME}-web-frontend" 3000 \
