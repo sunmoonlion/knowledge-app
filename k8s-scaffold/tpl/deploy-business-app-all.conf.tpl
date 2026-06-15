@@ -4,6 +4,7 @@
 __APP_UPPER___APP_PROJECT_ID="sunmoonai"
 __APP_UPPER___APP_NAMESPACE="app-platform-dev"
 ENVIRONMENT="development"
+__APP_UPPER___APP_IMAGE_TAG="${__APP_UPPER___APP_IMAGE_TAG:-1.0.0}"
 
 # App 源码根目录。Backend 的资源声明随源码维护。
 __APP_UPPER___APP_SOURCE_ROOT="${__APP_UPPER___APP_SOURCE_ROOT:-${HOME}/__APP__-app}"
