@@ -1,5 +1,5 @@
 #!/bin/bash
-# celeryworker-tpl-admin-backend Deployment YAML 生成脚本
+# __APP_NAME__ Deployment YAML 生成脚本
 
 set -euo pipefail
 
@@ -7,13 +7,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_FILE="$SCRIPT_DIR/generate-app.conf"
 # 从 generate-app/ -> app/ -> custom-values/ -> k8s-resource/
 K8S_RESOURCE_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
-# 从 generate-app/ -> app/ -> custom-values/ -> k8s-resource/ -> resources/ -> celeryworker-tpl-admin-backend/
+# 从 generate-app/ -> app/ -> custom-values/ -> k8s-resource/ -> resources/ -> __APP_NAME__/
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../../../.." && pwd)"
 OUTPUT_DIR="$SCRIPT_DIR"
 
-MAIN_DEPLOY_CONFIG="$PROJECT_ROOT/deploy-celeryworker-tpl-admin-backend/app/deploy-app/deploy-celeryworker-tpl-admin-backend.conf"
+MAIN_DEPLOY_CONFIG="$PROJECT_ROOT/deploy-__APP_NAME__/app/deploy-app/deploy-__APP_NAME__.conf"
 if [ -f "$MAIN_DEPLOY_CONFIG" ]; then
-    _temp_namespace=$(source "$MAIN_DEPLOY_CONFIG" 2>/dev/null && echo "${CELERYWORKER_TPL_ADMIN_BACKEND_NAMESPACE:-}")
+    _temp_namespace=$(source "$MAIN_DEPLOY_CONFIG" 2>/dev/null && echo "${__APP_NAME_UPPER___NAMESPACE:-}")
     _temp_environment=$(source "$MAIN_DEPLOY_CONFIG" 2>/dev/null && echo "${ENVIRONMENT:-}")
     [ -n "$_temp_namespace" ] && [ -z "${NAMESPACE:-}" ] && export NAMESPACE="$_temp_namespace"
     [ -n "$_temp_environment" ] && [ -z "${ENVIRONMENT:-}" ] && export ENVIRONMENT="$_temp_environment"
@@ -38,17 +38,76 @@ export NAMESPACE="${NAMESPACE:-}"
 export ENVIRONMENT="${ENVIRONMENT:-}"
 export ENV="${ENV:-}"
 
-export CELERYWORKER_TPL_ADMIN_BACKEND_IMAGE_REGISTRY="${CELERYWORKER_TPL_ADMIN_BACKEND_IMAGE_REGISTRY:-}"
-export CELERYWORKER_TPL_ADMIN_BACKEND_IMAGE_PROJECT="${CELERYWORKER_TPL_ADMIN_BACKEND_IMAGE_PROJECT:-}"
-export CELERYWORKER_TPL_ADMIN_BACKEND_IMAGE="${CELERYWORKER_TPL_ADMIN_BACKEND_IMAGE:-}"
-export CELERYWORKER_TPL_ADMIN_BACKEND_TAG="${CELERYWORKER_TPL_ADMIN_BACKEND_TAG:-}"
-export CELERYWORKER_TPL_ADMIN_BACKEND_FULL_IMAGE_NAME="${CELERYWORKER_TPL_ADMIN_BACKEND_IMAGE_REGISTRY}/${CELERYWORKER_TPL_ADMIN_BACKEND_IMAGE_PROJECT}/${CELERYWORKER_TPL_ADMIN_BACKEND_IMAGE}:${CELERYWORKER_TPL_ADMIN_BACKEND_TAG}"
+export __APP_NAME_UPPER___IMAGE_REGISTRY="${__APP_NAME_UPPER___IMAGE_REGISTRY:-}"
+export __APP_NAME_UPPER___IMAGE_PROJECT="${__APP_NAME_UPPER___IMAGE_PROJECT:-}"
+export __APP_NAME_UPPER___IMAGE="${__APP_NAME_UPPER___IMAGE:-}"
+export __APP_NAME_UPPER___TAG="${__APP_NAME_UPPER___TAG:-}"
+export __APP_NAME_UPPER___FULL_IMAGE_NAME="${__APP_NAME_UPPER___IMAGE_REGISTRY}/${__APP_NAME_UPPER___IMAGE_PROJECT}/${__APP_NAME_UPPER___IMAGE}:${__APP_NAME_UPPER___TAG}"
 export IMAGE_PULL_POLICY="${IMAGE_PULL_POLICY:-}"
-export CELERYWORKER_TPL_ADMIN_BACKEND_IMAGE_PULL_SECRET_NAME="${CELERYWORKER_TPL_ADMIN_BACKEND_IMAGE_PULL_SECRET_NAME:-}"
-export CELERYWORKER_TPL_ADMIN_BACKEND_SECRET_NAME="${CELERYWORKER_TPL_ADMIN_BACKEND_SECRET_NAME:-}"
-export CELERYWORKER_TPL_ADMIN_BACKEND_CONFIGMAP_NAME="${CELERYWORKER_TPL_ADMIN_BACKEND_CONFIGMAP_NAME:-}"
-export TPL_ADMIN_BACKEND_SECRET_NAME="${TPL_ADMIN_BACKEND_SECRET_NAME:-}"
-export TPL_ADMIN_BACKEND_CONFIGMAP_NAME="${TPL_ADMIN_BACKEND_CONFIGMAP_NAME:-}"
+export __APP_NAME_UPPER___IMAGE_PULL_SECRET_NAME="${__APP_NAME_UPPER___IMAGE_PULL_SECRET_NAME:-}"
+export __APP_NAME_UPPER___SECRET_NAME="${__APP_NAME_UPPER___SECRET_NAME:-}"
+export __APP_NAME_UPPER___CONFIGMAP_NAME="${__APP_NAME_UPPER___CONFIGMAP_NAME:-}"
+export __APP_NAME_UPPER___POSTGRESQL_SECRET_NAME="${__APP_NAME_UPPER___POSTGRESQL_SECRET_NAME:-}"
+export __APP_NAME_UPPER___REDIS_SECRET_NAME="${__APP_NAME_UPPER___REDIS_SECRET_NAME:-}"
+export __APP_NAME_UPPER___MONGODB_SECRET_NAME="${__APP_NAME_UPPER___MONGODB_SECRET_NAME:-}"
+export __APP_NAME_UPPER___DATABASE_ENV_FROM=""
+if [[ -n "$__APP_NAME_UPPER___POSTGRESQL_SECRET_NAME" ||
+      -n "$__APP_NAME_UPPER___REDIS_SECRET_NAME" ||
+      -n "$__APP_NAME_UPPER___MONGODB_SECRET_NAME" ]]; then
+    if [[ -z "$__APP_NAME_UPPER___POSTGRESQL_SECRET_NAME" ||
+          -z "$__APP_NAME_UPPER___REDIS_SECRET_NAME" ||
+          -z "$__APP_NAME_UPPER___MONGODB_SECRET_NAME" ]]; then
+        log_error "PostgreSQL、Redis 和 MongoDB Secret 名称必须同时设置"
+        exit 1
+    fi
+    printf -v __APP_NAME_UPPER___DATABASE_ENV_FROM \
+      '        - secretRef:\n            name: %s\n        - secretRef:\n            name: %s\n        - secretRef:\n            name: %s' \
+      "$__APP_NAME_UPPER___POSTGRESQL_SECRET_NAME" \
+      "$__APP_NAME_UPPER___REDIS_SECRET_NAME" \
+      "$__APP_NAME_UPPER___MONGODB_SECRET_NAME"
+    export __APP_NAME_UPPER___DATABASE_ENV_FROM
+fi
+export __APP_NAME_UPPER___OBJECT_STORAGE_CONFIGMAP_NAME="${__APP_NAME_UPPER___OBJECT_STORAGE_CONFIGMAP_NAME:-}"
+export __APP_NAME_UPPER___OBJECT_STORAGE_SECRET_NAME="${__APP_NAME_UPPER___OBJECT_STORAGE_SECRET_NAME:-}"
+export __APP_NAME_UPPER___OBJECT_STORAGE_ENV_FROM=""
+if [[ -n "$__APP_NAME_UPPER___OBJECT_STORAGE_CONFIGMAP_NAME" ||
+      -n "$__APP_NAME_UPPER___OBJECT_STORAGE_SECRET_NAME" ]]; then
+    if [[ -z "$__APP_NAME_UPPER___OBJECT_STORAGE_CONFIGMAP_NAME" ||
+          -z "$__APP_NAME_UPPER___OBJECT_STORAGE_SECRET_NAME" ]]; then
+        log_error "对象存储 ConfigMap 和 Secret 名称必须同时设置"
+        exit 1
+    fi
+    printf -v __APP_NAME_UPPER___OBJECT_STORAGE_ENV_FROM \
+      '        - configMapRef:\n            name: %s\n        - secretRef:\n            name: %s' \
+      "$__APP_NAME_UPPER___OBJECT_STORAGE_CONFIGMAP_NAME" \
+      "$__APP_NAME_UPPER___OBJECT_STORAGE_SECRET_NAME"
+    export __APP_NAME_UPPER___OBJECT_STORAGE_ENV_FROM
+fi
+export __APP_NAME_UPPER___ELASTICSEARCH_CONFIGMAP_NAME="${__APP_NAME_UPPER___ELASTICSEARCH_CONFIGMAP_NAME:-}"
+export __APP_NAME_UPPER___ELASTICSEARCH_SECRET_NAME="${__APP_NAME_UPPER___ELASTICSEARCH_SECRET_NAME:-}"
+export __APP_NAME_UPPER___ELASTICSEARCH_ENV_FROM=""
+export __APP_NAME_UPPER___ELASTICSEARCH_VOLUME_MOUNT=""
+export __APP_NAME_UPPER___ELASTICSEARCH_VOLUME=""
+if [[ -n "$__APP_NAME_UPPER___ELASTICSEARCH_CONFIGMAP_NAME" ||
+      -n "$__APP_NAME_UPPER___ELASTICSEARCH_SECRET_NAME" ]]; then
+    if [[ -z "$__APP_NAME_UPPER___ELASTICSEARCH_CONFIGMAP_NAME" ||
+          -z "$__APP_NAME_UPPER___ELASTICSEARCH_SECRET_NAME" ]]; then
+        log_error "Elasticsearch ConfigMap 和 Secret 名称必须同时设置"
+        exit 1
+    fi
+    printf -v __APP_NAME_UPPER___ELASTICSEARCH_ENV_FROM \
+      '        - configMapRef:\n            name: %s\n        - secretRef:\n            name: %s' \
+      "$__APP_NAME_UPPER___ELASTICSEARCH_CONFIGMAP_NAME" \
+      "$__APP_NAME_UPPER___ELASTICSEARCH_SECRET_NAME"
+    printf -v __APP_NAME_UPPER___ELASTICSEARCH_VOLUME_MOUNT \
+      '        - name: elasticsearch-ca\n          mountPath: /var/run/secrets/sunmoonai/elasticsearch\n          readOnly: true'
+    printf -v __APP_NAME_UPPER___ELASTICSEARCH_VOLUME \
+      '      - name: elasticsearch-ca\n        secret:\n          secretName: %s\n          items:\n          - key: ca.crt\n            path: ca.crt' \
+      "$__APP_NAME_UPPER___ELASTICSEARCH_SECRET_NAME"
+    export __APP_NAME_UPPER___ELASTICSEARCH_ENV_FROM
+    export __APP_NAME_UPPER___ELASTICSEARCH_VOLUME_MOUNT
+    export __APP_NAME_UPPER___ELASTICSEARCH_VOLUME
+fi
 export PVC_NAME="${PVC_NAME:-}"
 export PVC_MOUNT_PATH="${PVC_MOUNT_PATH:-}"
 export PVC_SUB_PATH="${PVC_SUB_PATH:-}"
@@ -69,7 +128,7 @@ validate_yaml() {
 }
 
 main() {
-    log_info "开始生成 celeryworker-tpl-admin-backend YAML 文件..."
+    log_info "开始生成 __APP_NAME__ YAML 文件..."
     log_info "输出目录: $OUTPUT_DIR"
 
     local full_template_path
