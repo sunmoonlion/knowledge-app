@@ -17,8 +17,6 @@ tpl-app/
 ├── CLAUDE.md                # Claude Code 项目上下文模板
 ├── docs-claude/             # Claude Code 文档体系模板
 ├── docs-cursor/             # Cursor 文档体系模板
-├── nodebullworker-tpl-web-backend/   # 用户端 backend 的 Node Bull/Redis 异步 worker 部署
-├── celeryworker-tpl-admin-backend/ # 管理端 backend 的 Celery Worker 部署模板
 ├── tpl-admin-frontend/      # 管理后台前端（Vue 3 + Vite，CSR）
 ├── tpl-admin-backend/       # 管理后台后端（FastAPI + SQLAlchemy）
 ├── tpl-web-frontend/        # 用户端前端（Next.js 16，SSR）
@@ -42,20 +40,6 @@ tpl-app/
 管理端：tpl-admin-frontend  +  tpl-admin-backend
 用户端：tpl-web-frontend    +  tpl-web-backend
 ```
-
-`init.sh <app-name>` 还会把两个 worker 模板实例化为：
-
-```
-nodebullworker-<app-name>-web-backend
-celeryworker-<app-name>-admin-backend
-```
-
-Worker 默认复用对应 backend 镜像和业务 ConfigMap/Secret。`nodebullworker-*web-backend` 使用 Node Bull + Redis；`celeryworker-*admin-backend` 使用 Python Celery + RabbitMQ（backend 镜像内已含 `app/worker.py` 与示例任务）。
-
-详细使用说明：
-
-- [Node Bull Worker 使用说明](docs-worker/nodebull-worker-使用说明.md)
-- [Celery Worker 使用说明](docs-worker/celery-worker-使用说明.md)
 
 BFF 认证说明：
 - 当前建议采用「后端 BFF 统一对接 Casdoor」模式：
