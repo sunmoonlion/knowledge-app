@@ -154,6 +154,13 @@ esac
 
 # kebab-case → UPPER_SNAKE_CASE（report-service → REPORT_SERVICE）
 APP_NAME_UPPER="$(echo "$APP_NAME" | tr '-' '_' | tr '[:lower:]' '[:upper:]')"
+case "$APP_NAME" in
+    *-admin-backend) INGRESS_HOST="${APP_NAME%-admin-backend}-admin-api.sunmoonai.com" ;;
+    *-admin-frontend) INGRESS_HOST="${APP_NAME%-admin-frontend}-admin.sunmoonai.com" ;;
+    *-web-backend) INGRESS_HOST="${APP_NAME%-web-backend}-api.sunmoonai.com" ;;
+    *-web-frontend) INGRESS_HOST="${APP_NAME%-web-frontend}.sunmoonai.com" ;;
+    *) INGRESS_HOST="${APP_NAME}.sunmoonai.com" ;;
+esac
 
 OBJECT_STORAGE_CONFIGMAP_NAME=""
 OBJECT_STORAGE_SECRET_NAME=""
@@ -219,6 +226,7 @@ render_tpl() {
     sed \
         -e "s|__APP_NAME_UPPER__|$APP_NAME_UPPER|g" \
         -e "s|__APP_NAME__|$APP_NAME|g" \
+        -e "s|__INGRESS_HOST__|$INGRESS_HOST|g" \
         -e "s|__PORT__|$PORT|g" \
         -e "s|__NAMESPACE__|$NAMESPACE|g" \
         -e "s|__REGISTRY__|$REGISTRY|g" \
