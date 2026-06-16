@@ -1,7 +1,7 @@
 # Casdoor 部署问题全记录
 
 > 记录日期：2026-04-26  
-> 适用项目：investment-app / tpl-app（两者共享同一套 Casdoor 部署方案）
+> 适用项目：investment-app / knowledge-app（两者共享同一套 Casdoor 部署方案）
 
 ---
 
@@ -86,7 +86,7 @@ cd /home/zym/k8s/sunmoonai/app-platform/auth-app/casdoor/deploy-casdoor
 
 ### 2.4 post-deploy-setup（已脚本化）
 
-**仓库路径（单一事实来源，不在 tpl-app 内）**：
+**仓库路径（单一事实来源，不在 knowledge-app 内）**：
 
 - `k8s/sunmoonai/app-platform/auth-app/casdoor/deploy-casdoor/post-deploy-setup.sh`
 - `k8s/sunmoonai/app-platform/auth-app/casdoor/deploy-casdoor/post-deploy-setup.conf`
@@ -98,7 +98,7 @@ bash post-deploy-setup.sh app-platform-dev   # namespace 按环境调整
 
 脚本会（幂等）：写入 Pod 内 `/conf/app.conf`（含 `copyrequestbody=true`）、创建 **Organizations / Applications**（由 `.conf` 中 `ORG_*` / `APP_*` 定义）、补齐 **`organization.languages`**（避免 OAuth 页白板）、按 **`ORG_*`** 创建各业务组织下的 **`admin`** 用户（密码同 **`ADMIN_PASSWORD`**）、更新 **built-in/admin** 密码。
 
-从 **tpl-app `init.sh` 派生的新项目**在 k8s 侧落地后：把 `.conf` 里的组织名、应用名、`redirect_uris`、client_id 改成新项目域名；首次 Casdoor 初始化务必执行上述脚本或等价 SQL（见下文「问题 11 / 12」）。
+从 **knowledge-app `init.sh` 派生的新项目**在 k8s 侧落地后：把 `.conf` 里的组织名、应用名、`redirect_uris`、client_id 改成新项目域名；首次 Casdoor 初始化务必执行上述脚本或等价 SQL（见下文「问题 11 / 12」）。
 
 investment 示例（仍以 `.conf` 为准）：
 
@@ -113,7 +113,7 @@ investment 示例（仍以 `.conf` 为准）：
 
 ### 问题 1：`SQLALCHEMY_DATABASE_URI` vs `DATABASE_URL` 命名不一致
 
-**影响组件**：`investment-admin-backend`、`tpl-admin-backend`
+**影响组件**：`investment-admin-backend`、`knowledge-admin-backend`
 
 **根因**：
 - `db-access-bootstrap/merge-and-generate-app-env.sh` 向 `.env` 写入 `DATABASE_URL`
@@ -150,7 +150,7 @@ for key in DATABASE_URL REDIS_HOST REDIS_PORT REDIS_DB REDIS_PASSWORD REDIS_USER
 
 ### 问题 2：`uuid-ossp` 扩展创建失败（权限不足）
 
-**影响组件**：`investment-admin-backend`、`tpl-admin-backend`
+**影响组件**：`investment-admin-backend`、`knowledge-admin-backend`
 
 **根因**：
 - `postgres.py` 的 `init()` 在应用启动时执行 `CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`
@@ -435,8 +435,8 @@ curl -v http://43.159.148.235:8001/api/auth/login 2>&1 | grep -E "location|Locat
 | `investment-web-backend/app/.env` | `CASDOOR_ENDPOINT` 加端口 `:30443` |
 | `k8s/.../casdoor/db-access-bootstrap/config/common.env` | 修正 `DBCTL_BIN` 路径（Windows→Linux） |
 | `k8s/.../casdoor/db-access-bootstrap/config/postgresql.external.env` | 修正 `DB_HOST`（旧IP→域名）、`PG_ADMIN_PASSWORD` |
-| `tpl-admin-backend/` 对应文件 | 与 `investment-admin-backend/` 同步所有上述修改 |
+| `knowledge-admin-backend/` 对应文件 | 与 `investment-admin-backend/` 同步所有上述修改 |
 | `k8s/.../auth-app/casdoor/deploy-casdoor/post-deploy-setup.sh` | `languages` 写入组织、`patch_organization_languages`、`ensure_org_admin_users`、`sql_escape_single`、built-in admin 密码转义 |
 | `k8s/.../auth-app/casdoor/deploy-casdoor/post-deploy-setup.conf` | `ADMIN_PASSWORD` 与各组织 `admin`、说明 `ORG_*` 与 `APP_*` 对齐 |
 
-（派生新项目时：**无需**把上述脚本复制进 tpl-app；在 **k8s 仓库**维护 Casdoor，tpl-app 侧仅复制业务 submodule 与文档约定。）
+（派生新项目时：**无需**把上述脚本复制进 knowledge-app；在 **k8s 仓库**维护 Casdoor，knowledge-app 侧仅复制业务 submodule 与文档约定。）

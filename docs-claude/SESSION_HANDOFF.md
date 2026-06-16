@@ -11,22 +11,22 @@
 **阶段**：基础设施 & Auth 对接完成，开始 Admin 前后端联调
 
 **最后完成的工作**：
-- tpl-web-backend（NestJS）启动修复：SWC 路径别名永久修复（tsc-alias），不再需要 runtime bootstrap
-- tpl-web-frontend auth 流程打通：登录 → Casdoor OIDC → callback → Redis session → dashboard
+- knowledge-web-backend（NestJS）启动修复：SWC 路径别名永久修复（tsc-alias），不再需要 runtime bootstrap
+- knowledge-web-frontend auth 流程打通：登录 → Casdoor OIDC → callback → Redis session → dashboard
 - 前端 BFF auth 路由全部删除（`app/api/auth/`），保持前端纯 UI
 - Casdoor 官方镜像更新：从旧 Harbor 缓存换成 `casbin/casdoor:latest`，已推 Harbor 并部署
 - 顺手清理：`Accept-Language` workaround 从 auth.service.ts 移除（bug 已在新版修复）
-- tpl-admin-backend（FastAPI/Python）初步启动：uv 安装 Python，创建 tpl_admin 数据库，修复 alembic 冲突
+- knowledge-admin-backend（FastAPI/Python）初步启动：uv 安装 Python，创建 knowledge_admin 数据库，修复 alembic 冲突
 
 ---
 
 ## 下一步要做什么
 
-**下一个任务**：完成 tpl-admin 前后端联调，测试 admin 登录流程
+**下一个任务**：完成 knowledge-admin 前后端联调，测试 admin 登录流程
 
 按顺序执行：
 1. 等 pnpm install 完成后启动 admin 前端：`pnpm dev --host`（端口 5173）
-2. 在 Casdoor 管理后台为 `app-tpl-admin` 应用添加 redirect URI：`http://43.159.148.235:8001/auth/callback`
+2. 在 Casdoor 管理后台为 `app-knowledge-admin` 应用添加 redirect URI：`http://43.159.148.235:8001/auth/callback`
 3. 访问 `http://43.159.148.235:5173` 测试 admin 登录流程
 4. admin backend 的 alembic 迁移问题：`command.upgrade` 不能在 async lifespan 里调用，已临时移除，后续需要正确处理（单独 CLI 命令或 asyncio.run 隔离）
 
@@ -36,10 +36,10 @@
 
 | 服务 | 启动命令 | 端口 |
 |------|---------|------|
-| tpl-web-backend | `node dist/main`（在 tpl-web-backend/app/） | 8000 |
-| tpl-web-frontend | `npm run dev`（在 tpl-web-frontend/app/） | 3000 |
-| tpl-admin-backend | `uv run uvicorn app.main:app --host 0.0.0.0 --port 8001`（在 tpl-admin-backend/app/） | 8001 |
-| tpl-admin-frontend | `pnpm dev --host`（在 tpl-admin-frontend/，需先 pnpm install） | 5173 |
+| knowledge-web-backend | `node dist/main`（在 knowledge-web-backend/app/） | 8000 |
+| knowledge-web-frontend | `npm run dev`（在 knowledge-web-frontend/app/） | 3000 |
+| knowledge-admin-backend | `uv run uvicorn app.main:app --host 0.0.0.0 --port 8001`（在 knowledge-admin-backend/app/） | 8001 |
+| knowledge-admin-frontend | `pnpm dev --host`（在 knowledge-admin-frontend/，需先 pnpm install） | 5173 |
 
 ---
 
@@ -60,10 +60,10 @@
 
 | 路径 | 说明 |
 |------|------|
-| `tpl-web-backend/app/.env` | 后端环境变量（含 NODE_TLS_REJECT_UNAUTHORIZED=0） |
-| `tpl-web-frontend/app/.env.local` | 前端环境变量（NEXT_PUBLIC_API_URL） |
-| `tpl-admin-backend/app/.env` | admin 后端（CASDOOR_REDIRECT_URI 已改为外网 IP） |
-| `tpl-admin-frontend/.env` | admin 前端（VITE_API_URL 已改为外网 IP） |
+| `knowledge-web-backend/app/.env` | 后端环境变量（含 NODE_TLS_REJECT_UNAUTHORIZED=0） |
+| `knowledge-web-frontend/app/.env.local` | 前端环境变量（NEXT_PUBLIC_API_URL） |
+| `knowledge-admin-backend/app/.env` | admin 后端（CASDOOR_REDIRECT_URI 已改为外网 IP） |
+| `knowledge-admin-frontend/.env` | admin 前端（VITE_API_URL 已改为外网 IP） |
 | `~/packages-to-be-installed/images/casdoor-latest.tar` | Casdoor 官方镜像离线备份（64MB） |
 
 ---
@@ -74,7 +74,7 @@
 |------|------|
 | admin backend alembic 迁移不能在 async lifespan 调用 | 临时移除，需后续正确处理 |
 | Casdoor admin 密码未知 | 上次尝试 `ChangeMeASAP123!` 失败，剩余尝试次数未知 |
-| tpl-admin-frontend pnpm install 可能还在进行 | 完成后需启动 |
+| knowledge-admin-frontend pnpm install 可能还在进行 | 完成后需启动 |
 
 ---
 

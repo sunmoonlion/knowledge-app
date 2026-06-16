@@ -1,5 +1,5 @@
 ---
-description: 用户端 BFF NestJS（tpl-web-backend）
+description: 用户端 BFF NestJS（knowledge-web-backend）
 globs: **/*web-backend/**/*.ts
 alwaysApply: false
 ---

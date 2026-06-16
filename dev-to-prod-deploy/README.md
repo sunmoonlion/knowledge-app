@@ -30,7 +30,7 @@ k8s 生产部署所需的配置集中在 k8s 仓库的 `resources/k8s-resource/c
 ## 与 k8s 仓库的对应关系
 
 ```
-tpl-app/dev-to-prod-deploy/   ←→   k8s/app-platform/<app>/resources/k8s-resource/
+knowledge-app/dev-to-prod-deploy/   ←→   k8s/app-platform/<app>/resources/k8s-resource/
 ├── configmap-conf/           →       custom-values/configMap/.../generate-*.conf
 ├── secret-conf/              →       custom-values/secret/.../generate-*-secret.conf
 ├── pvc-conf/                 →       custom-values/pvc/.../generate-*-pvc.conf

@@ -1,9 +1,9 @@
 ---
-description: tpl-app 模板仓库全局协作规则（四子模块父仓）
+description: knowledge-app 模板仓库全局协作规则（四子模块父仓）
 alwaysApply: true
 ---
 
-# tpl-app 全局规则
+# knowledge-app 全局规则
 
 本仓库是**父模板仓**，聚合四个 Git 子模块；执行 `init.sh` 后子目录会变为 `<项目名>-admin-frontend` 等。规则中的路径类 glob 使用 `*admin-backend` 等形式，以便初始化后仍尽量匹配。
 

@@ -1,5 +1,5 @@
 ---
-description: 管理后台 Vue 3 + Vite（tpl-admin-frontend）
+description: 管理后台 Vue 3 + Vite（knowledge-admin-frontend）
 globs: **/*admin-frontend/**/*.{vue,ts,tsx}
 alwaysApply: false
 ---

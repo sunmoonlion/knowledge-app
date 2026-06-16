@@ -1,5 +1,5 @@
 ---
-description: 管理端后端 FastAPI（tpl-admin-backend）
+description: 管理端后端 FastAPI（knowledge-admin-backend）
 globs: **/*admin-backend/**/*.py
 alwaysApply: false
 ---

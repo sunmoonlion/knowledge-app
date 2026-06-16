@@ -1,4 +1,4 @@
-# tpl-app 镜像构建手册
+# knowledge-app 镜像构建手册
 
 > 四个子模块统一使用 `mybuild/` 目录管理构建，结构完全一致。  
 > **构建上下文均为子模块根目录**，所有命令须在对应子模块目录下执行。
@@ -9,7 +9,7 @@
 
 ```bash
 # 1. 进入子模块
-cd tpl-admin-frontend   # 或其他三个模块
+cd knowledge-admin-frontend   # 或其他三个模块
 
 # 2. 构建（读取 mybuild/build.conf 中的配置）
 cd mybuild && ./build-image.sh
@@ -26,13 +26,13 @@ cd mybuild && ./build-image.sh
 
 | 子模块 | 本地镜像名 | Harbor 全名 |
 |---|---|---|
-| tpl-admin-frontend | `tpl-admin-frontend:1.0.0` | `harbor.sunmoonai.com:30443/k8s-images/tpl-admin-frontend:<tag>` |
-| tpl-admin-backend | `tpl-admin-backend:1.0.0` | `harbor.sunmoonai.com:30443/k8s-images/tpl-admin-backend:<tag>` |
-| tpl-web-frontend | `tpl-web-frontend:1.0.0` | `harbor.sunmoonai.com:30443/k8s-images/tpl-web-frontend:<tag>` |
-| tpl-web-backend | `tpl-web-backend:1.0.0` | `harbor.sunmoonai.com:30443/k8s-images/tpl-web-backend:<tag>` |
+| knowledge-admin-frontend | `knowledge-admin-frontend:1.0.0` | `harbor.sunmoonai.com:30443/k8s-images/knowledge-admin-frontend:<tag>` |
+| knowledge-admin-backend | `knowledge-admin-backend:1.0.0` | `harbor.sunmoonai.com:30443/k8s-images/knowledge-admin-backend:<tag>` |
+| knowledge-web-frontend | `knowledge-web-frontend:1.0.0` | `harbor.sunmoonai.com:30443/k8s-images/knowledge-web-frontend:<tag>` |
+| knowledge-web-backend | `knowledge-web-backend:1.0.0` | `harbor.sunmoonai.com:30443/k8s-images/knowledge-web-backend:<tag>` |
 
 **Tag 规则**：`<git-sha>`（不可变，生产使用）+ `latest`（移动引用，仅开发联调）。  
-**实例化**：`tpl-` 前缀由 `init.sh` 替换为业务名，同步修改各模块 `mybuild/build.conf` 中的 `IMAGE` 变量。
+**实例化**：`knowledge-` 前缀由 `init.sh` 替换为业务名，同步修改各模块 `mybuild/build.conf` 中的 `IMAGE` 变量。
 
 ---
 
@@ -42,10 +42,10 @@ cd mybuild && ./build-image.sh
 
 | 模块 | 镜像名变量 | Tag 变量 |
 |---|---|---|
-| tpl-admin-frontend | `ADMIN_CSR_IMAGE` | `ADMIN_CSR_TAG` |
-| tpl-admin-backend | `ADMIN_BACKEND_IMAGE` | `ADMIN_BACKEND_TAG` |
-| tpl-web-frontend | `TPL_SSR_IMAGE` | `TPL_SSR_TAG` |
-| tpl-web-backend | `WEB_BACKEND_IMAGE` | `WEB_BACKEND_TAG` |
+| knowledge-admin-frontend | `ADMIN_CSR_IMAGE` | `ADMIN_CSR_TAG` |
+| knowledge-admin-backend | `ADMIN_BACKEND_IMAGE` | `ADMIN_BACKEND_TAG` |
+| knowledge-web-frontend | `KNOWLEDGE_SSR_IMAGE` | `KNOWLEDGE_SSR_TAG` |
+| knowledge-web-backend | `WEB_BACKEND_IMAGE` | `WEB_BACKEND_TAG` |
 
 **常用修改：**
 
@@ -77,18 +77,18 @@ sudo nerdctl login harbor.sunmoonai.com:30443
 
 ---
 
-## 一、tpl-admin-frontend（Vue 3 + Vite → nginx）
+## 一、knowledge-admin-frontend（Vue 3 + Vite → nginx）
 
 ### 手动构建
 
 ```bash
-cd tpl-admin-frontend
+cd knowledge-admin-frontend
 
 # 黄金命令（与脚本等价）
 docker build -f mybuild/Dockerfile \
   --build-arg REGISTRY=harbor.sunmoonai.com:30443/k8s-images \
   --build-arg VITE_API_URL=http://localhost:8001 \
-  -t tpl-admin-frontend:1.0.0 .
+  -t knowledge-admin-frontend:1.0.0 .
 
 # 使用脚本（参数从 mybuild/build.conf 读取）
 cd mybuild
@@ -117,25 +117,25 @@ cd mybuild
 --context       <子模块根目录>
 --build-arg     REGISTRY=harbor.sunmoonai.com:30443/k8s-images
 --build-arg     VITE_API_URL=<环境 API 地址>
---destination   harbor.sunmoonai.com:30443/k8s-images/tpl-admin-frontend:<git-sha>
---destination   harbor.sunmoonai.com:30443/k8s-images/tpl-admin-frontend:latest
+--destination   harbor.sunmoonai.com:30443/k8s-images/knowledge-admin-frontend:<git-sha>
+--destination   harbor.sunmoonai.com:30443/k8s-images/knowledge-admin-frontend:latest
 --insecure
 --skip-tls-verify
 ```
 
 ---
 
-## 二、tpl-admin-backend（FastAPI + Python 3.12）
+## 二、knowledge-admin-backend（FastAPI + Python 3.12）
 
 ### 手动构建
 
 ```bash
-cd tpl-admin-backend
+cd knowledge-admin-backend
 
 # 黄金命令
 docker build -f mybuild/Dockerfile \
   --build-arg REGISTRY=harbor.sunmoonai.com:30443/k8s-images \
-  -t tpl-admin-backend:1.0.0 .
+  -t knowledge-admin-backend:1.0.0 .
 
 # 使用脚本
 cd mybuild
@@ -161,26 +161,26 @@ cd mybuild
 --dockerfile    mybuild/Dockerfile
 --context       <子模块根目录>
 --build-arg     REGISTRY=harbor.sunmoonai.com:30443/k8s-images
---destination   harbor.sunmoonai.com:30443/k8s-images/tpl-admin-backend:<git-sha>
---destination   harbor.sunmoonai.com:30443/k8s-images/tpl-admin-backend:latest
+--destination   harbor.sunmoonai.com:30443/k8s-images/knowledge-admin-backend:<git-sha>
+--destination   harbor.sunmoonai.com:30443/k8s-images/knowledge-admin-backend:latest
 --insecure
 --skip-tls-verify
 ```
 
 ---
 
-## 三、tpl-web-frontend（Next.js 16 SSR）
+## 三、knowledge-web-frontend（Next.js 16 SSR）
 
 ### 手动构建
 
 ```bash
-cd tpl-web-frontend
+cd knowledge-web-frontend
 
 # 黄金命令（--target 可省略，run-minimal 是最后一个 stage，默认构建）
 docker build -f mybuild/Dockerfile \
   --build-arg REGISTRY=harbor.sunmoonai.com:30443/k8s-images \
   --build-arg NEXT_PUBLIC_API_URL=http://localhost:8000 \
-  -t tpl-web-frontend:1.0.0 .
+  -t knowledge-web-frontend:1.0.0 .
 
 # 使用脚本
 cd mybuild
@@ -197,7 +197,7 @@ cd mybuild
 | `REGISTRY` | Docker 基础镜像仓库 | `harbor.sunmoonai.com:30443/k8s-images` |
 | `NODE_VERSION` | Node.js 版本 | `20.18.0` |
 | `NEXT_PUBLIC_API_URL` | Web BFF 地址，构建时静态嵌入 | 无，**必须传入** |
-| `NEXT_PUBLIC_APP_NAME` | 应用名称 | `tpl` |
+| `NEXT_PUBLIC_APP_NAME` | 应用名称 | `knowledge` |
 
 > `NEXT_PUBLIC_*` 构建时静态嵌入，**不同环境须构建不同镜像**。  
 > `next.config` 须配置 `output: 'standalone'`，否则 run-minimal 阶段产物不完整。
@@ -210,25 +210,25 @@ cd mybuild
 --target        run-minimal
 --build-arg     REGISTRY=harbor.sunmoonai.com:30443/k8s-images
 --build-arg     NEXT_PUBLIC_API_URL=<环境 API 地址>
---destination   harbor.sunmoonai.com:30443/k8s-images/tpl-web-frontend:<git-sha>
---destination   harbor.sunmoonai.com:30443/k8s-images/tpl-web-frontend:latest
+--destination   harbor.sunmoonai.com:30443/k8s-images/knowledge-web-frontend:<git-sha>
+--destination   harbor.sunmoonai.com:30443/k8s-images/knowledge-web-frontend:latest
 --insecure
 --skip-tls-verify
 ```
 
 ---
 
-## 四、tpl-web-backend（NestJS + TypeScript）
+## 四、knowledge-web-backend（NestJS + TypeScript）
 
 ### 手动构建
 
 ```bash
-cd tpl-web-backend
+cd knowledge-web-backend
 
 # 黄金命令（--target 可省略，run 是最后一个 stage，默认构建）
 docker build -f mybuild/Dockerfile \
   --build-arg REGISTRY=harbor.sunmoonai.com:30443/k8s-images \
-  -t tpl-web-backend:1.0.0 .
+  -t knowledge-web-backend:1.0.0 .
 
 # 使用脚本
 cd mybuild
@@ -256,8 +256,8 @@ cd mybuild
 --context       <子模块根目录>
 --target        run
 --build-arg     REGISTRY=harbor.sunmoonai.com:30443/k8s-images
---destination   harbor.sunmoonai.com:30443/k8s-images/tpl-web-backend:<git-sha>
---destination   harbor.sunmoonai.com:30443/k8s-images/tpl-web-backend:latest
+--destination   harbor.sunmoonai.com:30443/k8s-images/knowledge-web-backend:<git-sha>
+--destination   harbor.sunmoonai.com:30443/k8s-images/knowledge-web-backend:latest
 --insecure
 --skip-tls-verify
 ```
@@ -285,7 +285,7 @@ CI 中通过 Kaniko `--build-arg` 同样传入；`NO_PROXY` 须包含 Harbor 与
 
 - **Harbor 认证**：CI 使用 `kaniko-registry-secret`（Robot Account）挂载至 `/kaniko/.docker/config.json`，不写入 Dockerfile 或 Git
 - **运行时密钥**：数据库密码、Redis ACL、Casdoor Secret 等通过 K8s Secret/ConfigMap 注入，`.dockerignore` 须排除 `.env`
-- **非 root**：tpl-web-backend 运行时使用 `appuser`，其余模块按需跟进
+- **非 root**：knowledge-web-backend 运行时使用 `appuser`，其余模块按需跟进
 - **不引用 latest 生产**：生产镜像以 `<git-sha>` tag 为准
 
 ---
@@ -304,10 +304,10 @@ CI 中通过 Kaniko `--build-arg` 同样传入；`NO_PROXY` 须包含 Harbor 与
 □ 0. 确认 Harbor 项目名（k8s-images 或 apps），全局统一
 □ 1. 将基础镜像推送到 Harbor（见下方预缓存清单）
 □ 2. Harbor 登录：docker login harbor.sunmoonai.com:30443
-□ 3. tpl-admin-frontend：确认 VITE_API_URL 值，修改 build.conf
-□ 4. tpl-admin-backend：确认 app/uv.lock 已提交
-□ 5. tpl-web-frontend：确认 NEXT_PUBLIC_API_URL 值，修改 build.conf
-□ 6. tpl-web-backend：确认 CI 只引用主 Dockerfile
+□ 3. knowledge-admin-frontend：确认 VITE_API_URL 值，修改 build.conf
+□ 4. knowledge-admin-backend：确认 app/uv.lock 已提交
+□ 5. knowledge-web-frontend：确认 NEXT_PUBLIC_API_URL 值，修改 build.conf
+□ 6. knowledge-web-backend：确认 CI 只引用主 Dockerfile
 □ 7. 各模块本地 docker build 验证，确认容器可正常启动
 □ 8. 推送测试镜像到 Harbor，验证 <name>:<git-sha> 格式正确
 □ 9. 接入 Argo Workflows WorkflowTemplate，按各模块 CI/CD 参数配置
@@ -330,10 +330,10 @@ harbor.sunmoonai.com:30443
     ├── node:20.18.0-alpine
     ├── python:3.12-slim
     ├── nginx:stable-alpine
-    ├── tpl-admin-frontend:<git-sha>    ← 应用镜像
-    ├── tpl-admin-backend:<git-sha>
-    ├── tpl-web-frontend:<git-sha>
-    └── tpl-web-backend:<git-sha>
+    ├── knowledge-admin-frontend:<git-sha>    ← 应用镜像
+    ├── knowledge-admin-backend:<git-sha>
+    ├── knowledge-web-frontend:<git-sha>
+    └── knowledge-web-backend:<git-sha>
 ```
 
 > **前提**：在 Harbor UI 中确认 `k8s-images` 项目已存在且当前账号有推送权限。

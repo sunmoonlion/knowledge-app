@@ -1,5 +1,5 @@
 ---
-description: 用户端 Next.js（tpl-web-frontend，源码多在 app/）
+description: 用户端 Next.js（knowledge-web-frontend，源码多在 app/）
 globs: **/*web-frontend/**/*.{tsx,ts,jsx}
 alwaysApply: false
 ---
