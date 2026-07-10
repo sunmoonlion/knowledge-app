@@ -1,6 +1,6 @@
 # Knowledge Ingestion Worker Task
 
-Status: M1 mock worker implemented; M2 RAGFlow adapter implemented behind config
+Status: M1 mock worker implemented; M2 RAGFlow adapter implemented and deployed behind config
 
 ## Objective
 
@@ -56,8 +56,16 @@ The adapter uses RAGFlow public HTTP API:
 - `GET /api/v1/datasets`
 - `POST /api/v1/datasets`
 - `POST /api/v1/datasets/{dataset_id}/documents`
-- `POST /api/v1/datasets/{dataset_id}/chunks`
-- `GET /api/v1/datasets/{dataset_id}/documents/{document_id}`
+- `POST /api/v1/datasets/{dataset_id}/documents/parse`
+- `GET /api/v1/datasets/{dataset_id}/documents?id={document_id}`
+
+Important RAGFlow API details verified against v0.25.4:
+
+- `GET /datasets?name=...` returns a permission error for arbitrary names in the
+  current deployment. The adapter lists visible datasets and matches names
+  client-side before creating a new dataset.
+- `GET /documents/{document_id}` downloads the original file and returns
+  `application/octet-stream`; it is not a document status endpoint.
 
 If RAGFlow is not configured, the worker keeps the M1 mock behavior and records
 `mode=mock`, `ragflow=deferred`.
@@ -71,8 +79,32 @@ If RAGFlow is not configured, the worker keeps the M1 mock behavior and records
 - Deployed worker can advance a job to `succeeded`.
 - info-app distribution can record a successful response from knowledge-app.
 
+## Current Real RAGFlow Smoke
+
+The deployed adapter reaches RAGFlow successfully:
+
+```text
+ensure dataset -> create dataset -> upload document -> parse document -> poll document status
+```
+
+The current KIND cluster then fails inside RAGFlow parsing with:
+
+```text
+No default embedding model is set.
+```
+
+Database inspection confirms the admin tenant has no `embd_id` /
+`tenant_embd_id`, and no tenant-level embedding model binding. The cluster also
+has no reusable embedding/model service or model API key secret. RAGFlow's
+`Builtin` factory is present in metadata, but the deployed image does not expose
+a working built-in encoder for `BAAI/bge-m3`; adding it through the RAGFlow API
+fails model validation.
+
+This is a RAGFlow runtime configuration blocker, not a Knowledge App adapter
+blocker.
+
 ## Next Task
 
-Deploy an image containing the adapter, configure `RAGFLOW_API_KEY`, and run a
-real RAGFlow smoke test against the in-cluster `ragflow-sunmoonai-api` service.
-After that, add retrieval validation metadata.
+Configure a real RAGFlow default embedding provider for the admin tenant, then
+rerun the same real smoke test against the in-cluster `ragflow-sunmoonai-api`
+service. After that, add retrieval validation metadata.
