@@ -1,6 +1,6 @@
 # Knowledge Ingestion Worker Task
 
-Status: M1 mock worker implemented; M2 RAGFlow adapter implemented and deployed behind config
+Status: M1 mock worker implemented; M2 RAGFlow adapter implemented and deployed behind config; ops endpoints implemented
 
 ## Objective
 
@@ -15,6 +15,14 @@ M1 proved the worker boundary, status history, retry surface, and deployment pat
 M2 adds a real RAGFlow HTTP adapter, but keeps mock mode when RAGFlow credentials
 are not configured.
 
+The worker now uses explicit terminal error statuses instead of collapsing every
+failure into `failed`:
+
+```text
+accepted -> running -> succeeded
+accepted -> running -> ragflow_config_error / ragflow_parse_failed / artifact_unreadable / external_api_error / failed
+```
+
 ## M1 Scope
 
 - `POST /api/knowledge/ingestions` creates or idempotently returns a job.
@@ -22,6 +30,17 @@ are not configured.
   `app.tasks.process_knowledge_ingestion`.
 - `POST /api/knowledge/ingestions/{ingestion_id}/dispatch` exists for manual smoke
   and local fallback.
+- `POST /api/knowledge/ingestions/{ingestion_id}/retry` resets terminal failures
+  to `accepted` and redispatches them. `ragflow_config_error` is blocked unless
+  `force=true`, because retrying before fixing RAGFlow configuration only creates
+  repeated bad jobs.
+- `GET /api/knowledge/ragflow/config-check` checks whether the adapter is enabled,
+  reachable, and whether the current RAGFlow tenant has a default embedding model.
+  It reports only booleans and non-secret metadata; it never returns the API key.
+- `GET /api/knowledge/ingestions` supports operational filters:
+  `source_app`, `source_document_id`, `source_document_version_id`,
+  `target_dataset`, `status`, `ragflow_document_id`, `idempotency_key`,
+  `created_from`, and `created_to`.
 - The mock worker updates:
   - `accepted -> running`
   - `running -> succeeded`
@@ -103,8 +122,18 @@ fails model validation.
 This is a RAGFlow runtime configuration blocker, not a Knowledge App adapter
 blocker.
 
+The new `GET /api/knowledge/ragflow/config-check` endpoint should currently
+report `enabled=true`, `reachable=true`, and `has_default_embedding=false` until
+RAGFlow is configured with a valid default embedding provider.
+
 ## Next Task
 
 Configure a real RAGFlow default embedding provider for the admin tenant, then
 rerun the same real smoke test against the in-cluster `ragflow-sunmoonai-api`
-service. After that, add retrieval validation metadata.
+service. After that, rerun failed jobs via:
+
+```text
+POST /api/knowledge/ingestions/{ingestion_id}/retry
+```
+
+Then add retrieval validation metadata.
