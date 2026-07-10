@@ -1,6 +1,6 @@
 # Knowledge Ingestion Worker Task
 
-Status: M1 mock worker implemented, RAGFlow processing deferred
+Status: M1 mock worker implemented; M2 RAGFlow adapter implemented behind config
 
 ## Objective
 
@@ -11,9 +11,9 @@ state machine:
 accepted -> running -> succeeded / failed
 ```
 
-This task deliberately does not implement RAGFlow parsing, chunking, embedding, or
-indexing. It proves the worker boundary, status history, retry surface, and deployment
-path first.
+M1 proved the worker boundary, status history, retry surface, and deployment path.
+M2 adds a real RAGFlow HTTP adapter, but keeps mock mode when RAGFlow credentials
+are not configured.
 
 ## M1 Scope
 
@@ -31,26 +31,48 @@ path first.
 
 ## Explicit Non-Scope
 
-- No RAGFlow private API calls.
-- No object storage artifact fetch.
-- No chunk/embed/index work.
+- No direct RAGFlow database or private API calls.
+- No retrieval-quality validation against RAGFlow yet.
+- No cross-engine abstraction beyond the current RAGFlow adapter.
+
+## M2 RAGFlow Adapter
+
+When both `RAGFLOW_API_BASE` and `RAGFLOW_API_KEY` are configured, the worker runs:
+
+```text
+artifact refs -> fetch content -> ensure dataset -> upload document -> parse -> poll -> succeeded/failed
+```
+
+Supported artifact inputs:
+
+- `metadata.text` / `metadata.content` / `metadata.markdown` inline text.
+- `source_artifact_refs[].uri` with `http(s)://`.
+- `source_artifact_refs[].uri` with `data:`.
+- `source_artifact_refs[].uri` with `s3://bucket/key`.
+- `source_artifact_refs[].bucket` + `object_key`.
+
+The adapter uses RAGFlow public HTTP API:
+
+- `GET /api/v1/datasets`
+- `POST /api/v1/datasets`
+- `POST /api/v1/datasets/{dataset_id}/documents`
+- `POST /api/v1/datasets/{dataset_id}/chunks`
+- `GET /api/v1/datasets/{dataset_id}/documents/{document_id}`
+
+If RAGFlow is not configured, the worker keeps the M1 mock behavior and records
+`mode=mock`, `ragflow=deferred`.
 - No retrieval validation against RAGFlow.
 
 ## Acceptance
 
-- Unit tests pass for ingestion contract, asyncpg URL normalization, and mock worker
-  metadata.
+- Unit tests pass for ingestion contract, asyncpg URL normalization, mock metadata,
+  RAGFlow metadata, artifact resolution, S3 signing, and RAGFlow HTTP call flow.
 - Deployed API accepts info-app standard payload.
 - Deployed worker can advance a job to `succeeded`.
 - info-app distribution can record a successful response from knowledge-app.
 
 ## Next Task
 
-Replace the mock processor with a real processing adapter:
-
-```text
-artifact refs -> content fetch -> document profile -> chunk/embed/index -> ragflow ids
-```
-
-The worker must then update `ragflow_document_id`, structured failure details, and
-retrieval validation metadata.
+Deploy an image containing the adapter, configure `RAGFLOW_API_KEY`, and run a
+real RAGFlow smoke test against the in-cluster `ragflow-sunmoonai-api` service.
+After that, add retrieval validation metadata.

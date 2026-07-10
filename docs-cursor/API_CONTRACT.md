@@ -63,6 +63,13 @@
 ### POST /api/knowledge/ingestions
 提交上游业务系统的已治理文档版本，创建或幂等返回 ingestion job。
 
+处理模式：
+
+- 未配置 `RAGFLOW_API_BASE` 或 `RAGFLOW_API_KEY` 时，worker 使用 mock 模式，
+  仅验证状态机与队列链路。
+- 配置 RAGFlow 后，worker 会拉取 artifact、确保 Dataset、上传 Document、
+  触发解析并轮询解析状态，成功后写入 `ragflow_document_id`。
+
 **请求体**：
 
 ```json
@@ -112,7 +119,8 @@
 查询单个 ingestion job。
 
 ### POST /api/knowledge/ingestions/{ingestion_id}/status
-更新 ingestion job 状态。后续接 RAGFlow/worker 后由 knowledge-app 内部任务调用。
+更新 ingestion job 状态。通常由 knowledge-app 内部任务调用；外部系统不应直接
+绕过 ingestion worker 写状态。
 
 **请求体**：
 
