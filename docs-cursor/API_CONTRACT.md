@@ -58,19 +58,73 @@
 
 ## {{业务模块}}
 
-### GET /{{path}}
-{{描述}}
+## Knowledge Ingestion
+
+### POST /api/knowledge/ingestions
+提交上游业务系统的已治理文档版本，创建或幂等返回 ingestion job。
+
+**请求体**：
+
+```json
+{
+  "source_app": "info-app",
+  "source_document_id": "uuid",
+  "source_document_version_id": "uuid",
+  "source_artifact_refs": [
+    {
+      "artifact_type": "text",
+      "bucket": "development-info-originals",
+      "object_key": "path/to/text.txt",
+      "content_type": "text/plain",
+      "sha256": "..."
+    }
+  ],
+  "title": "string",
+  "canonical_url": "https://example.com/news/1",
+  "source_name": "string",
+  "content_hash": "string",
+  "metadata": {
+    "copyright_status": "licensed",
+    "trust_level": "official"
+  },
+  "target_dataset": "default",
+  "profile_key": "markdown",
+  "idempotency_key": "info-app:version:dataset"
+}
+```
+
+**响应**：`202 Accepted`，返回 `KnowledgeIngestionRead`。
+
+### GET /api/knowledge/ingestions
+查询 ingestion job。
 
 **Query 参数**：
 
 | 字段 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `{{field}}` | string | 是 | {{说明}} |
+| `source_app` | string | 否 | 上游应用，例如 `info-app` |
+| `source_document_version_id` | uuid | 否 | 上游文档版本 |
+| `status` | string | 否 | `accepted/running/succeeded/failed` |
+| `limit` | int | 否 | 默认 50 |
+| `offset` | int | 否 | 默认 0 |
 
-**响应**：
+### GET /api/knowledge/ingestions/{ingestion_id}
+查询单个 ingestion job。
+
+### POST /api/knowledge/ingestions/{ingestion_id}/status
+更新 ingestion job 状态。后续接 RAGFlow/worker 后由 knowledge-app 内部任务调用。
+
+**请求体**：
+
 ```json
 {
-  "{{field}}": "{{type}}"
+  "status": "succeeded",
+  "last_error": null,
+  "metadata": {
+    "chunk_count": 12
+  },
+  "knowledge_document_id": "knowledge-doc-id",
+  "ragflow_document_id": "ragflow-doc-id"
 }
 ```
 
