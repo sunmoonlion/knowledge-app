@@ -9,6 +9,10 @@
 
 ### Added
 - 初始化 `docs-cursor/` 文档体系
+- Knowledge ingestion API 已接入部署态 smoke：`POST /api/knowledge/ingestions` 可接收 info-app 标准 payload，并返回 `202 Accepted` / `status=accepted`。
+
+### Changed
+- 明确当前 ingestion API 完成的是“接收入库 job”入口闭环；后续 RAGFlow 解析、切片、索引和状态推进仍由 worker 阶段实现。
 
 ---
 
