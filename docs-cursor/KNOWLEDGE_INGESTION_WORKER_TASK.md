@@ -106,31 +106,49 @@ The deployed adapter reaches RAGFlow successfully:
 ensure dataset -> create dataset -> upload document -> parse document -> poll document status
 ```
 
-The current KIND cluster then fails inside RAGFlow parsing with:
+2026-07-11 update:
+
+- RAGFlow UI default models have been configured:
+  - `LLM=deepseek-v3@Tongyi-Qianwen`
+  - `Embedding=text-embedding-v3@Tongyi-Qianwen`
+- `GET /api/knowledge/ragflow/config-check` now reports:
 
 ```text
-No default embedding model is set.
+enabled=true
+reachable=true
+has_default_embedding=true
+ready=true
 ```
 
-Database inspection confirms the admin tenant has no `embd_id` /
-`tenant_embd_id`, and no tenant-level embedding model binding. The cluster also
-has no reusable embedding/model service or model API key secret. RAGFlow's
-`Builtin` factory is present in metadata, but the deployed image does not expose
-a working built-in encoder for `BAAI/bge-m3`; adding it through the RAGFlow API
-fails model validation.
+The remaining blocker is RAGFlow Pod egress to DashScope:
 
-This is a RAGFlow runtime configuration blocker, not a Knowledge App adapter
-blocker.
+```text
+connect dashscope.aliyuncs.com:443 failed: TimeoutError
+```
 
-The new `GET /api/knowledge/ragflow/config-check` endpoint should currently
-report `enabled=true`, `reachable=true`, and `has_default_embedding=false` until
-RAGFlow is configured with a valid default embedding provider.
+The real smoke job reached RAGFlow parse and generated chunks, then RAGFlow
+failed while generating embeddings:
+
+```text
+Generate embedding error: HTTPSConnectionPool(host='dashscope.aliyuncs.com', port=443) ... connect timeout
+```
+
+This is now a cluster/network or provider reachability blocker, not a missing
+embedding configuration and not a Knowledge App adapter blocker.
+
+Verified smoke job:
+
+```text
+knowledge ingestion id: 7012be9a-7071-4445-9e01-f412b4717baf
+ragflow dataset: codex-smoke / fee8dcdc7cc611f1a85655b688ac3ca7
+ragflow document: fef1f3307cc611f1a85655b688ac3ca7
+final knowledge status: ragflow_parse_failed
+```
 
 ## Next Task
 
-Configure a real RAGFlow default embedding provider for the admin tenant, then
-rerun the same real smoke test against the in-cluster `ragflow-sunmoonai-api`
-service. After that, rerun failed jobs via:
+Fix RAGFlow Pod egress to the selected embedding provider, or switch RAGFlow to
+an embedding provider reachable from the KIND cluster. Then rerun failed jobs via:
 
 ```text
 POST /api/knowledge/ingestions/{ingestion_id}/retry
