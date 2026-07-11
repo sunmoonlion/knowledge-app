@@ -120,38 +120,23 @@ has_default_embedding=true
 ready=true
 ```
 
-The remaining blocker is RAGFlow Pod egress to DashScope:
-
-```text
-connect dashscope.aliyuncs.com:443 failed: TimeoutError
-```
-
-The real smoke job reached RAGFlow parse and generated chunks, then RAGFlow
-failed while generating embeddings:
-
-```text
-Generate embedding error: HTTPSConnectionPool(host='dashscope.aliyuncs.com', port=443) ... connect timeout
-```
-
-This is now a cluster/network or provider reachability blocker, not a missing
-embedding configuration and not a Knowledge App adapter blocker.
+The first smoke after selecting `Tongyi-Qianwen` used the provider default
+DashScope endpoint and failed with `dashscope.aliyuncs.com:443 connect timeout`.
+After reconfiguring the provider endpoint to the Beijing MaaS URL, retrying the
+same job succeeded.
 
 Verified smoke job:
 
 ```text
 knowledge ingestion id: 7012be9a-7071-4445-9e01-f412b4717baf
 ragflow dataset: codex-smoke / fee8dcdc7cc611f1a85655b688ac3ca7
-ragflow document: fef1f3307cc611f1a85655b688ac3ca7
-final knowledge status: ragflow_parse_failed
+ragflow document: 20769e647cc911f1a85655b688ac3ca7
+ragflow parse status: DONE
+ragflow chunk count: 1
+final knowledge status: succeeded
 ```
 
 ## Next Task
 
-Fix RAGFlow Pod egress to the selected embedding provider, or switch RAGFlow to
-an embedding provider reachable from the KIND cluster. Then rerun failed jobs via:
-
-```text
-POST /api/knowledge/ingestions/{ingestion_id}/retry
-```
-
-Then add retrieval validation metadata.
+Add retrieval validation metadata and run an info-app -> knowledge-app end-to-end
+distribution smoke with real artifacts.
