@@ -1,0 +1,28 @@
+{
+  "contract_version": 1,
+  "operation": "upsert",
+  "distribution_id": "00000000-0000-0000-0000-000000000012",
+  "source_app": "info-app",
+  "source_document_id": "00000000-0000-0000-0000-000000000010",
+  "source_document_version_id": "00000000-0000-0000-0000-000000000011",
+  "artifact": {
+    "artifact_type": "clean_markdown",
+    "uri": "s3://development-info-originals/info/original/doc/clean.md",
+    "storage_version": "version-1",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "size_bytes": 7,
+    "content_type": "text/markdown; charset=utf-8"
+  },
+  "dataset_key": "market-news",
+  "idempotency_key": "info-app:00000000-0000-0000-0000-000000000011:market-news:artifact-v1",
+  "correlation_id": "00000000-0000-0000-0000-000000000012",
+  "causation_id": "00000000-0000-0000-0000-000000000011",
+  "document": {
+    "title": "Example",
+    "canonical_url": "https://example.com/news",
+    "content_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "source_name": "Example Source",
+    "published_at": null,
+    "metadata": {}
+  }
+}

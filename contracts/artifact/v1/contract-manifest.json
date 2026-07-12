@@ -1,0 +1,6 @@
+{
+  "contract": "info-knowledge-artifact",
+  "major_version": 1,
+  "schema": "info-knowledge-artifact.schema.json",
+  "sha256": "a3219604ed3562c436336d4650c2a0fd08afd9a8829e1d17b12d6a929f499c81"
+}
