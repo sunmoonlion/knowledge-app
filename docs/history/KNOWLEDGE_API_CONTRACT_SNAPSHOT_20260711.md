@@ -1,5 +1,7 @@
 # API 契约（API CONTRACT）
 
+> 历史接口快照，最后有效日期为 2026-07-11，不是契约唯一真相源。当前接口以 FastAPI 路由/OpenAPI、provider/consumer contract tests 和 k8s 仓库的版本化跨仓契约为准。
+
 > 接口定义的唯一真实来源，从后端代码中提取后在此记录。
 > 每次新增接口时更新。
 

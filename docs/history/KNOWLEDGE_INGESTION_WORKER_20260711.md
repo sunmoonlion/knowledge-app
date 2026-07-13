@@ -1,5 +1,7 @@
 # Knowledge Ingestion Worker Task
 
+> 历史实施快照，最后有效日期为 2026-07-11。本文仅保留 ingestion worker/RAGFlow 早期实现证据；当前任务、契约和部署状态以代码、测试以及 k8s 仓库的 MoocManus v5 文档为准。
+
 Status: M1 mock worker implemented; M2 RAGFlow adapter implemented and deployed behind config; ops endpoints implemented
 
 ## Objective
