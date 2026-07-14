@@ -20,6 +20,7 @@ if [[ -z "$K8S_ROOT_DIR" || ! -f "$K8S_ROOT_DIR/utils/cluster-arg-parser.sh" ]];
 fi
 
 source "$K8S_ROOT_DIR/utils/cluster-arg-parser.sh"
+source "$K8S_ROOT_DIR/utils/app-dependency-preflight.sh"
 
 log_info() { echo "ℹ️  $*"; }
 log_success() { echo "✅ $*"; }
@@ -50,8 +51,12 @@ DEFAULT_ENVIRONMENT="${ENVIRONMENT:-development}"
 
 APP_VAR_PREFIX="$(echo "${BUSINESS_APP_NAME%-app}" | tr '[:lower:]-' '[:upper:]_')"
 for component in ADMIN_BACKEND ADMIN_FRONTEND WEB_BACKEND WEB_FRONTEND; do
-    export "${APP_VAR_PREFIX}_${component}_TAG=${APP_IMAGE_TAG}"
+    tag_var="${APP_VAR_PREFIX}_${component}_TAG"
+    eval "current_tag=\${${tag_var}:-}"
+    export "${tag_var}=${current_tag:-$APP_IMAGE_TAG}"
 done
+unset tag_var current_tag
+app_dependency_validate_frontend_release_tags "$APP_VAR_PREFIX"
 
 call_subscript() {
     local script_path="$1"
