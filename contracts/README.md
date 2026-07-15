@@ -20,3 +20,23 @@ artifact.
 
 Breaking changes require a new major directory and a dual-version migration
 window. CI publishes the schema together with its SHA-256 digest.
+
+## Retrieval and citation
+
+- Current compatible major: `retrieval/v1`
+- Request schema: `retrieval/v1/knowledge-retrieval-request.schema.json`
+- Provider response schema: `retrieval/v1/knowledge-retrieval-response.schema.json`
+- Browser-safe citation schema: `retrieval/v1/citation.schema.json`
+- Release manifest and digests: `retrieval/v1/contract-manifest.json`
+- Provider: Knowledge App
+- Service consumer: Research App
+
+Clients submit stable `dataset_key` values only. RAGFlow dataset, document and
+chunk identifiers are private provider bindings and are never domain identity.
+Every Evidence item is traceable through a stable Knowledge document/version
+to an Info document/version. Browsers receive only the citation projection,
+including an authorized same-origin source path instead of a raw provider URL.
+
+Breaking changes require a new major directory. Additive optional response
+fields remain compatible, but consumers must pin the manifest digests and run
+consumer-driven contract tests before accepting a provider release.

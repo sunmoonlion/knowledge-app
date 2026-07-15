@@ -1,0 +1,20 @@
+{
+  "contract": "sunmoonai.knowledge.retrieval",
+  "major": 1,
+  "provider": "knowledge-app",
+  "service_consumers": ["research-app"],
+  "browser_consumers": ["research-web-frontend"],
+  "files": {
+    "knowledge-retrieval-request.schema.json": "1a09240f1183e13eff708fd6dbc5a39742d29bbcdd9d86b4646232e55e3cacf8",
+    "knowledge-retrieval-response.schema.json": "1a0fef964e5c06e5dc7dff18f45b00713ba9bac79d44ccbed928b3ba6bd52fe5",
+    "citation.schema.json": "b5cf350f4a9360cfd2211d66fcd65018fd3f1f1300e8071a480ce5ffcaa768c8",
+    "examples/request.json": "75646cf79504d6075a9ff2e80877bfa1505e32015bd2ac4de8282647a2552553",
+    "examples/response.json": "c77d2e50681f4a0ef6fa84e30af7094fc85cb7fc186206e1f6cb0dadad8d62d0",
+    "examples/citation.json": "75f6d86edbb1befcddef95405006b6af7bf91ec1ceb48a9c707bb467d0b11448"
+  },
+  "compatibility": {
+    "request": "exact-fields-v1",
+    "response": "consumers-must-tolerate-additive-optional-fields",
+    "breaking_change": "new-major-and-dual-version-window"
+  }
+}
