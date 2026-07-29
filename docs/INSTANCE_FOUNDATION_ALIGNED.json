@@ -1,0 +1,26 @@
+{
+  "status": "INSTANCE_FOUNDATION_ALIGNED",
+  "template_release_id": "p0-008b-b6-unified-20260729",
+  "app": "knowledge",
+  "task": "V5-P0-009E",
+  "component_commits": {
+    "knowledge-admin-frontend": "90de6ff6aa1b84904b81adb84dd5ffc07986919e",
+    "knowledge-admin-backend": "e4e8cf4aa0e8ed207c64d84bdf2613bb33e547ce",
+    "knowledge-web-frontend": "ef3a8db8a7b3256106289994835d783bbb1746a5",
+    "knowledge-web-backend": "c401380184e4183a9822dd05d793a31b5d0ddb55"
+  },
+  "pairs": {
+    "admin": {
+      "result": "passed",
+      "frontend_image": "harbor.sunmoonai.com:30443/app-images/knowledge-admin-frontend@sha256:85b66d68d54784e6a70f3f5d51a7893db62dea4d2a64a91672c66a037d8e3efb",
+      "backend_image": "harbor.sunmoonai.com:30443/app-images/knowledge-admin-backend@sha256:0b8b949fd2247395f5df329dc705b32b39c33af9d195adf43f3a50865fe8701d"
+    },
+    "web": {
+      "result": "passed",
+      "frontend_image": "harbor.sunmoonai.com:30443/app-images/knowledge-web-frontend@sha256:597193f3d16334e2d81b24c6cd00b54e361fa810f284ba7c11db72f5f34a7cd4",
+      "backend_image": "harbor.sunmoonai.com:30443/app-images/knowledge-web-backend@sha256:a2718a1b254eddc81b096836c8bb2e86e8be52a3dfa25c6da6295b04bcb545f1"
+    }
+  },
+  "traffic_cutover": false,
+  "remote_git_push": false
+}
