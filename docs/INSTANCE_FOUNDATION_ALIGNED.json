@@ -5,7 +5,7 @@
   "task": "V5-P0-009E",
   "component_commits": {
     "knowledge-admin-frontend": "544814f9fb443350edefb5776c3a0cac07f6f497",
-    "knowledge-admin-backend": "5d01bdd9013b67cb05b838d520282b25e1337eb7",
+    "knowledge-admin-backend": "6cb71ce402b2d823532f6ef22655741b2f4655a8",
     "knowledge-web-frontend": "eccd7cd2a4f7cb4019edafbd089f5883b8e0792e",
     "knowledge-web-backend": "e542cdd6ad24e9bedf9f55f503552bccb1c46546"
   },
