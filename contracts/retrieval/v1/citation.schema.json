@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.sunmoonai.com/knowledge/retrieval/v1/citation.schema.json",
+  "title": "Browser-safe citation v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "evidence_id",
+    "knowledge_document_id",
+    "knowledge_document_version_id",
+    "chunk_id",
+    "title",
+    "quote",
+    "source_document_id",
+    "source_document_version_id",
+    "content_hash",
+    "source_href"
+  ],
+  "properties": {
+    "contract_version": { "const": 1 },
+    "evidence_id": { "$ref": "#/$defs/uuid" },
+    "knowledge_document_id": { "$ref": "#/$defs/uuid" },
+    "knowledge_document_version_id": { "$ref": "#/$defs/uuid" },
+    "chunk_id": { "$ref": "#/$defs/uuid" },
+    "title": { "type": ["string", "null"], "maxLength": 4096 },
+    "quote": { "type": "string", "minLength": 1, "maxLength": 1000 },
+    "source_document_id": { "$ref": "#/$defs/uuid" },
+    "source_document_version_id": { "$ref": "#/$defs/uuid" },
+    "content_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "source_href": {
+      "type": "string",
+      "pattern": "^/api/citations/[0-9a-fA-F-]{36}/source$",
+      "maxLength": 128
+    }
+  },
+  "$defs": {
+    "uuid": { "type": "string", "format": "uuid" }
+  }
+}

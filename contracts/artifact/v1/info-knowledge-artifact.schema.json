@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.sunmoonai.com/knowledge/artifact/v1/info-knowledge-artifact.schema.json",
+  "title": "Info to Knowledge immutable artifact ingestion v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "operation",
+    "distribution_id",
+    "source_app",
+    "source_document_id",
+    "source_document_version_id",
+    "artifact",
+    "dataset_key",
+    "idempotency_key",
+    "correlation_id",
+    "document"
+  ],
+  "properties": {
+    "contract_version": { "const": 1 },
+    "operation": { "const": "upsert" },
+    "distribution_id": { "$ref": "#/$defs/uuid" },
+    "source_app": { "const": "info-app" },
+    "source_document_id": { "$ref": "#/$defs/uuid" },
+    "source_document_version_id": { "$ref": "#/$defs/uuid" },
+    "artifact": { "$ref": "#/$defs/artifact" },
+    "dataset_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "idempotency_key": { "type": "string", "minLength": 1, "maxLength": 255 },
+    "correlation_id": { "$ref": "#/$defs/uuid" },
+    "causation_id": { "$ref": "#/$defs/uuid" },
+    "document": { "$ref": "#/$defs/document" }
+  },
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "uri",
+        "storage_version",
+        "sha256",
+        "size_bytes",
+        "content_type"
+      ],
+      "properties": {
+        "artifact_type": { "enum": ["clean_markdown", "text_plain"] },
+        "uri": {
+          "type": "string",
+          "pattern": "^s3://[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]/[^?#]+$"
+        },
+        "storage_version": { "type": "string", "minLength": 1, "maxLength": 255 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "size_bytes": { "type": "integer", "minimum": 1, "maximum": 52428800 },
+        "content_type": {
+          "type": "string",
+          "pattern": "^(text/markdown|text/plain)(;[ ]*charset=[A-Za-z0-9._-]+)?$"
+        }
+      }
+    },
+    "document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "canonical_url", "content_hash", "metadata"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "canonical_url": { "type": "string", "minLength": 1, "maxLength": 8192 },
+        "content_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "source_name": { "type": ["string", "null"], "maxLength": 255 },
+        "published_at": { "type": ["string", "null"], "format": "date-time" },
+        "metadata": { "type": "object" }
+      }
+    }
+  }
+}

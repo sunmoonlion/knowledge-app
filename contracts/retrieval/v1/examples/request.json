@@ -1,0 +1,18 @@
+{
+  "contract_version": 1,
+  "request_id": "8f8da0c8-ae89-4ddb-bcf6-4f312fa69582",
+  "query": "What changed in the latest market policy?",
+  "dataset_keys": ["market-news"],
+  "filters": {
+    "source_document_version_ids": ["359ea32d-90b3-47e4-9168-930bfb768d0d"]
+  },
+  "top_k": 5,
+  "token_budget": 2000,
+  "security_context": {
+    "tenant_id": "sunmoonai",
+    "actor_id": "dfdd7e2b-7677-4c0c-8f16-0a63e8da2127",
+    "actor_type": "human",
+    "policy_version": "research-v1",
+    "delegated_run_id": "edbf5dc0-3710-4524-9cef-55d1f9ce79cc"
+  }
+}

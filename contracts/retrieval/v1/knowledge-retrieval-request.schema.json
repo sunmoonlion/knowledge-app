@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.sunmoonai.com/knowledge/retrieval/v1/knowledge-retrieval-request.schema.json",
+  "title": "Knowledge retrieval request v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "request_id",
+    "query",
+    "dataset_keys",
+    "filters",
+    "top_k",
+    "token_budget",
+    "security_context"
+  ],
+  "properties": {
+    "contract_version": { "const": 1 },
+    "request_id": { "$ref": "#/$defs/uuid" },
+    "query": { "type": "string", "minLength": 1, "maxLength": 8192 },
+    "dataset_keys": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/datasetKey" }
+    },
+    "filters": { "$ref": "#/$defs/filters" },
+    "top_k": { "type": "integer", "minimum": 1, "maximum": 50 },
+    "token_budget": { "type": "integer", "minimum": 1, "maximum": 32000 },
+    "security_context": { "$ref": "#/$defs/securityContext" }
+  },
+  "$defs": {
+    "uuid": { "type": "string", "format": "uuid" },
+    "datasetKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "uuidFilter": {
+      "type": "array",
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/uuid" }
+    },
+    "filters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source_document_ids": { "$ref": "#/$defs/uuidFilter" },
+        "source_document_version_ids": { "$ref": "#/$defs/uuidFilter" }
+      }
+    },
+    "securityContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenant_id", "actor_id", "actor_type", "policy_version"],
+      "properties": {
+        "tenant_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "actor_id": { "$ref": "#/$defs/uuid" },
+        "actor_type": { "enum": ["human", "service"] },
+        "policy_version": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "delegated_run_id": { "$ref": "#/$defs/uuid" }
+      }
+    }
+  }
+}
