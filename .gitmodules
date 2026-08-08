@@ -1,12 +1,9 @@
 [submodule "knowledge-admin-frontend"]
 	path = knowledge-admin-frontend
 	url = https://github.com/sunmoonlion/knowledge-admin-frontend.git
-[submodule "knowledge-web-backend"]
-	path = knowledge-web-backend
-	url = https://github.com/sunmoonlion/knowledge-web-backend.git
 [submodule "knowledge-web-frontend"]
 	path = knowledge-web-frontend
 	url = https://github.com/sunmoonlion/knowledge-web-frontend.git
-[submodule "knowledge-admin-backend"]
-	path = knowledge-admin-backend
-	url = https://github.com/sunmoonlion/knowledge-admin-backend.git
+[submodule "knowledge-backend"]
+	path = knowledge-backend
+	url = https://github.com/sunmoonlion/knowledge-backend.git
