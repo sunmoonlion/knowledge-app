@@ -1,17 +1,13 @@
 ---
-description: knowledge-app 模板仓库全局协作规则（四子模块父仓）
+description: knowledge-app 架构 v2 三子模块父仓全局协作规则
 alwaysApply: true
 ---
 
 # knowledge-app 全局规则
 
-本仓库是**父模板仓**，聚合四个 Git 子模块；执行 `init.sh` 后子目录会变为 `<项目名>-admin-frontend` 等。规则中的路径类 glob 使用 `*admin-backend` 等形式，以便初始化后仍尽量匹配。
-
-- 目标优先级：先跑通主链路，再做重构和升级。
-- 每次改动都要可验证：提供启动步骤、验证命令、预期结果。
-- 不破坏现有可运行基线：未确认前不主动升级 Python/Node/核心依赖。
-- 接口优先对齐：前端字段、状态码、鉴权头严格以后端为准。
-- 小步提交：单次变更聚焦一个问题，避免混合「功能+重构」。
-- 安全底线：禁止新增明文密钥/密码，配置进入环境变量或本地私有配置。
-- 文档同步：新增模块或命令时，更新对应子模块 README 或父仓说明。
-- 执行风格：默认高自主执行；仅在高风险/不可逆操作前确认（如重写历史、强制推送、大规模删除、破坏性覆盖）。
+- 活跃源码只允许 `knowledge-admin-frontend`、`knowledge-web-frontend`、`knowledge-backend`。
+- Admin/Web 前端共用统一 FastAPI Backend，不得重新引入独立 Web Backend。
+- Worker 代码属于统一 Backend，K8s 声明属于 k8s 仓库，父仓不得保存副本。
+- 接口、鉴权、错误码和 schema 以后端代码/OpenAPI/contract tests 为准。
+- 禁止提交明文凭据；每个改动必须有可重复验证和可追溯提交。
+- 推送先子仓、后父仓；历史冻结材料不得冒充当前实现。

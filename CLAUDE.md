@@ -14,7 +14,7 @@
 - 接口事实来自代码/OpenAPI/schema 和 contract tests；`docs/history/` 只用于审计。
 - 任何时刻只推进实施计划中一个已激活任务；不得以 RAGFlow smoke 代替跨仓 Retrieval/Citation 契约。
 - 不输出或提交 token、cookie、client secret、signed URL、真实凭据或完整敏感响应。
-- 安装、网络构建和 Git push 由项目负责人执行；本地提交和验证必须可追溯。
+- 安装、网络构建和 Git push 必须遵循当前任务授权；提交和验证必须可追溯。
 
 ## 文档规则
 
