@@ -51,3 +51,6 @@ uv run pytest -q
 前端的安装、类型检查、lint、测试与构建命令以各子模块 README 和
 `package.json` 为准。跨仓迁移、契约、镜像与运行时状态以 `k8s` 仓库的
 architecture-v2 权威文档为准。
+
+开发环境晋级生产的配置分层与检查表见
+[dev-to-prod-deploy](dev-to-prod-deploy/README.md)。
