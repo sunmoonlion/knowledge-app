@@ -12,7 +12,7 @@
     "tenant_id": "sunmoonai",
     "actor_id": "dfdd7e2b-7677-4c0c-8f16-0a63e8da2127",
     "actor_type": "human",
-    "policy_version": "research-v1",
+    "policy_version": "investment-v1",
     "delegated_run_id": "edbf5dc0-3710-4524-9cef-55d1f9ce79cc"
   }
 }
