@@ -11,14 +11,14 @@ dependency directories into the post-migration repositories.
 Inspect a historical file without restoring it:
 
 ```bash
-git -C /home/zymun/knowledge-app/knowledge-admin-frontend \
+git -C /home/zymun/master/knowledge-app/knowledge-admin-frontend \
   show p0-009a-pre-20260729:app/src/example.ts
 ```
 
 Create an isolated recovery worktree:
 
 ```bash
-git -C /home/zymun/knowledge-app/knowledge-admin-frontend \
+git -C /home/zymun/master/knowledge-app/knowledge-admin-frontend \
   worktree add /tmp/knowledge-admin-frontend-pre-p0-009 \
   p0-009a-pre-20260729
 ```
