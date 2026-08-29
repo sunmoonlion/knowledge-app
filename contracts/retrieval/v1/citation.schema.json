@@ -30,8 +30,8 @@
     "content_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
     "source_href": {
       "type": "string",
-      "pattern": "^/api/citations/[0-9a-fA-F-]{36}/source$",
-      "maxLength": 128
+      "pattern": "^/api/web/v1/citations/[0-9a-fA-F-]{36}/source$",
+      "maxLength": 160
     }
   },
   "$defs": {
