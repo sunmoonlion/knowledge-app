@@ -2,15 +2,19 @@
   "contract": "sunmoonai.knowledge.retrieval",
   "major": 1,
   "provider": "knowledge-app",
-  "service_consumers": ["investment-app"],
-  "browser_consumers": ["investment-web-frontend"],
+  "service_consumers": [
+    "investment-app"
+  ],
+  "browser_consumers": [
+    "investment-web-frontend"
+  ],
   "files": {
     "knowledge-retrieval-request.schema.json": "1a09240f1183e13eff708fd6dbc5a39742d29bbcdd9d86b4646232e55e3cacf8",
     "knowledge-retrieval-response.schema.json": "1a0fef964e5c06e5dc7dff18f45b00713ba9bac79d44ccbed928b3ba6bd52fe5",
-    "citation.schema.json": "b5cf350f4a9360cfd2211d66fcd65018fd3f1f1300e8071a480ce5ffcaa768c8",
+    "citation.schema.json": "330aecdedbac40198116217f514cbe953afdba96fab0861d78c9d5bc5807b180",
     "examples/request.json": "91f7a587ddf49eae117c151ac0d9b67ccfefa6a323d004eb07fb5fe180b150b9",
     "examples/response.json": "c77d2e50681f4a0ef6fa84e30af7094fc85cb7fc186206e1f6cb0dadad8d62d0",
-    "examples/citation.json": "75f6d86edbb1befcddef95405006b6af7bf91ec1ceb48a9c707bb467d0b11448"
+    "examples/citation.json": "71513772f71c8564bad0c353a230edada2bd157e9236c75371acedbe008687a5"
   },
   "compatibility": {
     "request": "exact-fields-v1",
