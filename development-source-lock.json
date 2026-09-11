@@ -8,8 +8,8 @@
   "components": [
     {
       "path": "knowledge-backend",
-      "commit": "34f5bb44c298a45cb700dfe3430fdc5449500866",
-      "tree": "d482abffd83beb46226d58b99cfeb2388b8e3081",
+      "commit": "255a18b5d3821dcd1f69cf80f62c0a883e724530",
+      "tree": "c78db098abe0d5171f1b1ffe660ebc44b752932e",
       "remote_branch": "origin/luna/durable-delivery-20260911-local"
     },
     {
