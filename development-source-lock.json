@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "development-source-lock",
+  "repository": "knowledge-app",
+  "formal_release": false,
+  "task": "durable-delivery-luna-20260911",
+  "release_boundary": "Source-only development candidate; historical formal release and deployed images are unchanged.",
+  "components": [
+    {
+      "path": "knowledge-backend",
+      "commit": "34f5bb44c298a45cb700dfe3430fdc5449500866",
+      "tree": "d482abffd83beb46226d58b99cfeb2388b8e3081",
+      "remote_branch": "origin/luna/durable-delivery-20260911-local"
+    },
+    {
+      "path": "knowledge-admin-frontend",
+      "commit": "87c1fe77fc30d8f3b4e5d038012341cd81e571d3",
+      "tree": "f5f12b3396ea519331d676db406e951da7e13a34",
+      "remote_branch": "origin/luna/durable-delivery-20260911-local"
+    },
+    {
+      "path": "knowledge-web-frontend",
+      "commit": "c011aec62e063f7731b3b69cf3449da218980594",
+      "tree": "44c716f6aa67a912252ffe3816fcb60b9ac3b2af",
+      "remote_branch": "origin/luna/durable-delivery-20260911-local"
+    }
+  ]
+}
