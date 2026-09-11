@@ -8,9 +8,9 @@
   "components": [
     {
       "path": "knowledge-backend",
-      "commit": "255a18b5d3821dcd1f69cf80f62c0a883e724530",
-      "tree": "c78db098abe0d5171f1b1ffe660ebc44b752932e",
-      "remote_branch": "origin/luna/durable-delivery-20260911-local"
+      "commit": "72f17d2e81bafaa5818a9a94e735c011720b9baf",
+      "tree": "d6cb0aa72e291b40718d6cee196723eab78ef866",
+      "remote_branch": "origin/master"
     },
     {
       "path": "knowledge-admin-frontend",
