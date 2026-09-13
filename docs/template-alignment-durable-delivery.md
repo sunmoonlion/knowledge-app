@@ -82,3 +82,16 @@ Knowledge 固定 `knowledge-backend@e99a894`；日志策略、Postgres 包装器
 新增 8 项日志测试；B6b 单次轮询/故障回归保留。不改摄入协议、前端、迁移或服务契约。
 本轮没有 KIND、真实身份、发布回滚或业务 Provider 验收。此项只关闭 SQL/HTTP 日志源码
 欠账，不代表 M1-203 运行态或 M1-503 全套观测已通过。
+
+## 2026-09-13 B7b：API schema readiness 增量对齐
+
+模板 `tpl-backend@ed8d5dc`、Info 固定提交先过门禁；Knowledge 固定
+`knowledge-backend@40edfc2` 完整 **262 passed / 0 skipped**（27.84 秒），Ruff/Pyright 通过。
+共 4 文件：schema_readiness、测试、说明与模板逐字相同，API 只增加相同检查逻辑。
+包名/领域路由保留，期望 revision 取自身迁移链，不复制模板版本；无新增配置、临时兼容
+或违规漂移。本次增量对齐不是全仓重验。新增 19 项真实隔离 PG 迁移/降级/再升级、
+SELECT 权限、阻塞超时与恢复等测试；旧解析调度/授权/契约回归保留。
+
+三个 ready 别名在协作式预算内检查依赖和精确 revision，live 保持无依赖；不自动迁移。
+未改摄入协议/前端/迁移/契约，也未操作业务库/Provider。业务 API principal、KIND、
+真实身份及联合发布/回滚未验收，不能把本包探针源码等同于 B5/B6 可直接混滚部署。
