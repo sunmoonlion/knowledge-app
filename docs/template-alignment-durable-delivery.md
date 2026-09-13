@@ -108,3 +108,20 @@ Knowledge 固定 `knowledge-backend@d16fb6c` 最后两次全量 **286 passed / 0
 原用例及两次完整复跑未复现；没有修改代码或放宽断言，根因仍未确定，留 B7 活性复核。
 只读指标不代表 Worker/Scheduler 正常；scrape/告警/业务权限和正式部署均未验收。
 测试为隔离 PostgreSQL 与共享契约，未接触业务库、真实 RAGFlow 或 Secret。
+
+## 2026-09-13 B7e：Worker 消费配置检查增量
+
+模板固定 `tpl-backend@5369862` 全量 167 项、Info `info-backend@7755da2` 全量 411 项
+先通过后接入。Knowledge 固定 `knowledge-backend@7b11608` Ruff/Pyright 通过；环境
+修复后连续两轮原始完整套件 **322 passed / 0 skipped**（44.71 / 44.50 秒）。
+新增 CLI、35 项单元、1 项真实 RabbitMQ/本仓 prefork Worker 测试及说明，四文件与模板
+逐字同步；另同步旧观测锁超时测试的 monkeypatch 作用域修正，生产 2 秒预算不改。
+
+首轮常规套件在旧重放观测及上传响应丢失恢复处失败，曾暂停串行推进。后捕获隔离 DB
+时钟倒退约 1.876 秒，核实 WSL Hyper-V 隐式校时与 timesyncd 同开；经批准关闭重复
+校时后原断言不变、常规套件连续通过，才推进 Investment。不是放宽断言或跳过旧测试。
+详细环境证据与最终复跑回执见 k8s 的 v5-backlog-worker-readiness-luna.md。
+
+本增量无配置差异、临时兼容或违规漂移；领域任务注册/摄入/Provider/迁移/契约均保留。
+历史 bundle/release 未修改，实例探针需下次联合新镜像发布接线；不据本包声明 KIND、
+真实身份/业务环境、消费完成进展、Scheduler 活性或部署回滚已验收。
