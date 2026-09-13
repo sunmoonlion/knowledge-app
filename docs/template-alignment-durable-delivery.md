@@ -1,5 +1,71 @@
 # Knowledge 模板对齐：可靠投递开发候选
 
+## 2026-09-13 暂停集成
+
+所有者改为暂停并同步现有成果，本次父仓固定后端 `e79a71272dbcf487e2a0def6dd65a954d3ca0ed8`。
+后续 B7u 固定完整回归 418 passed / 0 skipped；累计证据与未完项见 k8s
+`sunmoonai/docs/v5-backlog-disposition-luna.md` 和 `v5-backlog-joint-runtime-identity-luna.md`。
+下文“本地/尚未推送”保留为各包当时历史；源码同步不是正式镜像发布或业务身份切换。
+
+## 2026-09-13 B7j 回执进展（本地，未发布）
+
+最终固定检查点 `knowledge-backend@5df4f1759cd64bd0a3ca2c4cae8f68102ebe681d`，模板
+`a91eb3e284ae91d4bc6b82fe567c4163cfa728f0` 和 Info 修订后全量通过再串行本仓：
+**415 passed / 0 skipped，72.09 秒**，Ruff/Pyright 通过。只将 gauge 下降用例改为
+移除隔离合成回执，不假定域 Outbox 可直接删除，归档保护不动。
+以下保留首轮候选历史，最终门禁以本段为准。
+
+模板 `tpl-backend@a37835132217d8458a7440532f07d437a4684e3b` 固定全量 255 项、
+Info 500 项通过后才同步本仓。Knowledge
+`knowledge-backend@1597b453fb11901277fb93c8316e796228572d41` 完整
+**415 passed / 0 skipped，72.03 秒**，Ruff/Pyright 通过。
+共享观测器增加精确已提交 Inbox 数量/最大记录时间，保留 gauge 和无回执策略，
+非有限回执使采集失败。两文件增量及四个新测试文件同步，不新增业务表或身份。
+差异分类：原摄入/解析/轮询 handler、consumer 和租约领域扩展保留；无配置新增差异、
+临时兼容或公共增量违规漂移，不声明全仓相同。
+真实 prefork 暂停/父进程 pong/恢复、重复消费和回滚通过；测试只替换隔离存储与
+合成 handler，既有真实 PG/解析故障与契约套件仍执行。回执不是业务成功量、per-worker
+健康或真实 Provider/部署验收，监控接线仍未来 N4-OPS-01。
+六文件固定证据见 k8s `sunmoonai/docs/v5-backlog-worker-progress-luna.md`；
+父仓 gitlink 不暂存、master 不改、不推送，等待最终统一集成。
+
+## 2026-09-13 B7i 本地增量（尚未发布）
+
+模板固定 `tpl-backend@ed157e41f11e5e20e6b77812890cb55d382b58f4` 全量 243 项、
+Info 全量 488 项通过后才同步本仓。Knowledge 固定
+`knowledge-backend@937f09f90a357fa142d24d7c3883da5dfb133597` 的 Ruff/Pyright
+通过，完整 **403 passed / 0 skipped，62.55 秒**。
+五个新增 Scheduler 活动/CLI/测试/说明文件逐字同步，bootstrap 只加观察类选择。
+差异分类：Knowledge 摄入/解析/轮询、handler 与调度清单保留；配置无新增差异，
+使用原 schedule 路径；无临时兼容层或公共增量违规漂移，不宣称全仓相同。
+
+真实本仓 Beat 发布及暂停/恢复/重启、既有真实 PG 故障/Provider 恢复与契约回归通过。
+观察的是 Linux 本机循环和发送调用，不是 Worker 业务完成或真实 Provider 部署验收；
+无镜像/部署/迁移/身份修改。监控安装/采集/告警送达由未来 N4-OPS-01 接收，未实施。
+本地提交与证据见 k8s `sunmoonai/docs/v5-backlog-scheduler-activity-luna.md`；
+父仓 gitlink 不暂存、不推送，master 和云端留待最终统一集成。
+
+## 2026-09-13 B7h 本地增量（尚未发布）
+
+模板 `c66654a591b186ac814cadb907defc421e94aba6` → Knowledge
+`b786a2ca54e891330d642cd5c7984270c9848e94`，严格在 Info 完整门禁通过后实施。
+新增 `GET /api/internal/v1/delivery/metrics`，仅签名服务身份及 `delivery:observe`
+授权可访问；使用既有只读 collector/API 池，进程内单次准入，失败无旧值/假零。
+公共 endpoint、24 项 HTTP 测试、观测说明三文件 SHA-256 与模板一致；路由和响应头
+只加相同增量，保留 Knowledge 摄入/检索 Internal 路由、实际 handler、RAGFlow 与
+单次轮询策略。Knowledge 既有 Internal 能力不在休眠清单，本包不改该清单。
+
+差异分类：领域扩展保留；Knowledge 身份/audience 配置保留，不默认加主体 scope；
+无新增兼容层；本包公共三文件无违规漂移。前端、迁移、部署与依赖未变。首轮
+Ruff/Pyright 通过，完整回归 359 passed / 0 skipped（50.17 秒），固定提交复验回执
+见 k8s `sunmoonai/docs/v5-backlog-metrics-http-luna.md`；本节是增量而非全量重比。
+父仓 gitlink、master、远端和云端不更新，最后统一集成；没有实际采集器/告警上线。
+
+Info 复验发现的恢复期预算泄漏先在模板确定性复现、修正，再严格串行同步。
+Knowledge 最终本地检查点 `ffc88f94d2dcfec728eef43a668f8c8756453e84`，只追加
+两份共享测试的故障注入范围修正（与模板相同），固定提交 Ruff/Pyright 通过，
+360 passed / 0 skipped（50.81 秒）。正式 2 秒超时与运行代码未改，359 项为首轮历史。
+
 日期：2026-09-11。顺序为模板、Info 验证收口后接入 Knowledge；本文不是正式发布批准。
 
 ## 全量源码比较
@@ -125,3 +191,18 @@ Knowledge 固定 `knowledge-backend@d16fb6c` 最后两次全量 **286 passed / 0
 本增量无配置差异、临时兼容或违规漂移；领域任务注册/摄入/Provider/迁移/契约均保留。
 历史 bundle/release 未修改，实例探针需下次联合新镜像发布接线；不据本包声明 KIND、
 真实身份/业务环境、消费完成进展、Scheduler 活性或部署回滚已验收。
+
+
+## 2026-09-13 B7f：显式投递状态与时钟回退
+
+模板本地固定 `tpl-backend@1c5173b` 先过 176 项完整门禁，再串行 Info→Knowledge→Investment。
+本仓本地固定 `knowledge-backend@94512d5` 全量 **335 passed / 0 skipped**，Ruff/Pyright 通过。
+公共四生产文件、9 项故障回归及说明六文件与模板 SHA-256 一致。
+新增四项复用原上传/解析响应丢失、轮询时限及重放观测场景的故障回归；Provider/摄入领域代码未改。
+没有新增配置差异、临时兼容或违规漂移；这是增量对齐，不重新声称全仓相同。
+
+释放使用负无穷而不删除 epoch 行，立即入队/重放/对账不添加墙钟门槛；真正预约与退避保留。
+原失败断言未改，先在旧代码确定性复现再验证修复；详细记录在 k8s 的
+v5-backlog-clock-regression-luna.md。没有改系统校时、迁移/前端/契约/Secret/镜像或业务部署。
+本轮按所有者要求只保存本地 Luna 候选，父仓 gitlink 暂未更新，未合并 master 或推送同步；
+待剩余处置完成后统一集成。真实身份/KIND/发布回滚与运行监控不因本次通过而自动销账。
