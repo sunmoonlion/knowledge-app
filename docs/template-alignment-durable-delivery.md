@@ -95,3 +95,16 @@ SELECT 权限、阻塞超时与恢复等测试；旧解析调度/授权/契约�
 三个 ready 别名在协作式预算内检查依赖和精确 revision，live 保持无依赖；不自动迁移。
 未改摄入协议/前端/迁移/契约，也未操作业务库/Provider。业务 API principal、KIND、
 真实身份及联合发布/回滚未验收，不能把本包探针源码等同于 B5/B6 可直接混滚部署。
+
+## 2026-09-13 B7d：只读投递观测增量对齐
+
+模板 `tpl-backend@1f8941f`、Info `info-backend@9ea1c5e` 固定提交依次过门禁后接入。
+Knowledge 固定 `knowledge-backend@d16fb6c` 最后两次全量 **286 passed / 0 skipped**
+（30.91 / 31.00 秒），Ruff/Pyright 通过；5 个新文件与模板逐字相同，新增 24 项。
+领域 topic 使用原 handler 注册，不动摄入授权、解析游标、Provider、迁移或跨 App DTO。
+本包无配置差异、临时兼容或违规漂移；领域扩展保留，增量对齐不冒充全仓重验。
+
+首轮重放观测用例出现一次 publishable=0 而预期 1，单独复跑、150 次重放场景、100 次
+原用例及两次完整复跑未复现；没有修改代码或放宽断言，根因仍未确定，留 B7 活性复核。
+只读指标不代表 Worker/Scheduler 正常；scrape/告警/业务权限和正式部署均未验收。
+测试为隔离 PostgreSQL 与共享契约，未接触业务库、真实 RAGFlow 或 Secret。
