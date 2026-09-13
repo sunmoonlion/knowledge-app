@@ -3,13 +3,13 @@
   "kind": "development-source-lock",
   "repository": "knowledge-app",
   "formal_release": false,
-  "task": "durable-delivery-luna-20260911",
+  "task": "v5-backlog-b5-luna-20260913",
   "release_boundary": "Source-only development candidate; historical formal release and deployed images are unchanged.",
   "components": [
     {
       "path": "knowledge-backend",
-      "commit": "72f17d2e81bafaa5818a9a94e735c011720b9baf",
-      "tree": "d6cb0aa72e291b40718d6cee196723eab78ef866",
+      "commit": "81df172cd6dd1b92ed057a369a9fcc3c375ea9d8",
+      "tree": "8effc27f841876b135e646df9e947bb9d0aaf2b6",
       "remote_branch": "origin/master"
     },
     {
