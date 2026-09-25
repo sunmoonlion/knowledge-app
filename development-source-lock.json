@@ -3,13 +3,13 @@
   "kind": "development-source-lock",
   "repository": "knowledge-app",
   "formal_release": false,
-  "task": "B7-B9-closeout-kind-20260919",
+  "task": "knowledge-mcp-kind-20260925",
   "release_boundary": "Immutable development candidate source; actual deployment requires the matching KIND release, prepared independent identities, and verified quiescent backup.",
   "components": [
     {
       "path": "knowledge-backend",
-      "commit": "2b4ee8c92b6372edcaacb0e5e27f00bed9338e43",
-      "tree": "25cd746f02f7f70c47c8e0da8321e535007fd618",
+      "commit": "4d9804c3d5f4084b83bdb00ba49cbf0f8b5cbb55",
+      "tree": "cdcc93c8d8656b8c379277ecf5e8b5791cd117b3",
       "remote_branch": "origin/master"
     },
     {
